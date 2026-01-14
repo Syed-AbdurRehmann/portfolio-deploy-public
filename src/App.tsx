@@ -9,6 +9,7 @@ import Portfolio from "./pages/Portfolio";
 import NotFound from "./pages/NotFound";
 import Navigation from "@/components/Navigation";
 import MeshBackground from "@/components/MeshBackground";
+import CustomCursor from "@/components/CustomCursor";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <MeshBackground />
+          <CustomCursor />
           <Navigation />
           <Routes>
             <Route path="/" element={<Home />} />
