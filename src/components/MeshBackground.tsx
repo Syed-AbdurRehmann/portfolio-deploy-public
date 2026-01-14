@@ -1,9 +1,24 @@
 import { useEffect, useRef } from "react";
 
+interface Blob {
+  x: number;
+  y: number;
+  targetX: number;
+  targetY: number;
+  radius: number;
+  baseRadius: number;
+  vx: number;
+  vy: number;
+  hue: number;
+}
+
 const MeshBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const prevMouseRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   const animationFrameRef = useRef<number>();
+  const blobsRef = useRef<Blob[]>([]);
+  const timeRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -23,21 +38,94 @@ const MeshBackground = () => {
 
     resizeCanvas();
 
-    // Create mesh points for parallax grid
+    // Initialize aura blobs
+    const initBlobs = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      
+      blobsRef.current = [
+        // Main large aura blob
+        {
+          x: width * 0.3,
+          y: height * 0.4,
+          targetX: width * 0.3,
+          targetY: height * 0.4,
+          radius: 250,
+          baseRadius: 250,
+          vx: 0,
+          vy: 0,
+          hue: 0, // Red
+        },
+        // Secondary blob
+        {
+          x: width * 0.6,
+          y: height * 0.5,
+          targetX: width * 0.6,
+          targetY: height * 0.5,
+          radius: 200,
+          baseRadius: 200,
+          vx: 0,
+          vy: 0,
+          hue: 0,
+        },
+        // Third blob
+        {
+          x: width * 0.5,
+          y: height * 0.3,
+          targetX: width * 0.5,
+          targetY: height * 0.3,
+          radius: 180,
+          baseRadius: 180,
+          vx: 0,
+          vy: 0,
+          hue: 350,
+        },
+        // Smaller accent blobs
+        {
+          x: width * 0.2,
+          y: height * 0.6,
+          targetX: width * 0.2,
+          targetY: height * 0.6,
+          radius: 120,
+          baseRadius: 120,
+          vx: 0,
+          vy: 0,
+          hue: 10,
+        },
+        {
+          x: width * 0.75,
+          y: height * 0.35,
+          targetX: width * 0.75,
+          targetY: height * 0.35,
+          radius: 150,
+          baseRadius: 150,
+          vx: 0,
+          vy: 0,
+          hue: 355,
+        },
+      ];
+    };
+
+    initBlobs();
+
+    // Create mesh points for geometric lines
     const createMeshPoints = () => {
       const points: { x: number; y: number; originX: number; originY: number }[] = [];
-      const spacing = 100;
+      const spacing = 120;
       const cols = Math.ceil(window.innerWidth / spacing) + 4;
       const rows = Math.ceil(window.innerHeight / spacing) + 4;
 
       for (let i = -2; i < cols; i++) {
         for (let j = -2; j < rows; j++) {
-          const x = i * spacing;
-          const y = j * spacing;
-          points.push({ x, y, originX: x, originY: y });
+          points.push({ 
+            x: i * spacing, 
+            y: j * spacing, 
+            originX: i * spacing, 
+            originY: j * spacing 
+          });
         }
       }
-      return { points, cols: cols + 2, rows: rows + 2, spacing };
+      return { points, cols: cols + 2, rows: rows + 2 };
     };
 
     let mesh = createMeshPoints();
@@ -45,177 +133,153 @@ const MeshBackground = () => {
     const animate = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
+      timeRef.current += 0.01;
 
-      // Clear canvas with dark background
+      // Clear canvas
       ctx.fillStyle = 'hsl(0, 0%, 3%)';
       ctx.fillRect(0, 0, width, height);
 
-      // Update mesh points based on mouse position (parallax effect)
-      const mouseInfluence = 30;
-      mesh.points.forEach(point => {
+      // Calculate mouse velocity for dispersion effect
+      const mouseVelX = mouseRef.current.x - prevMouseRef.current.x;
+      const mouseVelY = mouseRef.current.y - prevMouseRef.current.y;
+      const mouseSpeed = Math.sqrt(mouseVelX * mouseVelX + mouseVelY * mouseVelY);
+      
+      prevMouseRef.current = { ...mouseRef.current };
+
+      // Update and draw aura blobs
+      blobsRef.current.forEach((blob, index) => {
+        // Calculate distance from mouse
+        const dx = mouseRef.current.x - blob.x;
+        const dy = mouseRef.current.y - blob.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Dispersion effect - push blobs away from cursor
+        if (distance < 300) {
+          const force = (300 - distance) / 300;
+          const angle = Math.atan2(dy, dx);
+          const disperseStrength = force * (mouseSpeed * 0.5 + 20);
+          
+          blob.vx -= Math.cos(angle) * disperseStrength * 0.1;
+          blob.vy -= Math.sin(angle) * disperseStrength * 0.1;
+          
+          // Squish the blob when cursor is near
+          blob.radius = blob.baseRadius * (1 - force * 0.3);
+        } else {
+          // Return to base radius
+          blob.radius += (blob.baseRadius - blob.radius) * 0.02;
+        }
+        
+        // Apply velocity
+        blob.x += blob.vx;
+        blob.y += blob.vy;
+        
+        // Damping
+        blob.vx *= 0.95;
+        blob.vy *= 0.95;
+        
+        // Return to original position slowly
+        blob.x += (blob.targetX - blob.x) * 0.01;
+        blob.y += (blob.targetY - blob.y) * 0.01;
+        
+        // Add organic movement
+        const wobbleX = Math.sin(timeRef.current + index * 2) * 30;
+        const wobbleY = Math.cos(timeRef.current * 0.7 + index * 1.5) * 25;
+        
+        // Draw blob with gradient
+        const gradient = ctx.createRadialGradient(
+          blob.x + wobbleX, blob.y + wobbleY, 0,
+          blob.x + wobbleX, blob.y + wobbleY, blob.radius * 1.5
+        );
+        
+        const hue = blob.hue;
+        gradient.addColorStop(0, `hsla(${hue}, 85%, 55%, 0.6)`);
+        gradient.addColorStop(0.3, `hsla(${hue}, 80%, 45%, 0.4)`);
+        gradient.addColorStop(0.6, `hsla(${hue}, 75%, 35%, 0.2)`);
+        gradient.addColorStop(1, 'transparent');
+        
+        ctx.beginPath();
+        ctx.arc(blob.x + wobbleX, blob.y + wobbleY, blob.radius * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      });
+
+      // Draw mesh grid with parallax
+      const { points, cols, rows } = mesh;
+      
+      points.forEach(point => {
         const dx = mouseRef.current.x - point.originX;
         const dy = mouseRef.current.y - point.originY;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const maxDistance = 400;
         
-        if (distance < maxDistance) {
-          const force = (1 - distance / maxDistance) * mouseInfluence;
+        if (distance < 300) {
+          const force = (300 - distance) / 300 * 20;
           const angle = Math.atan2(dy, dx);
-          point.x = point.originX - Math.cos(angle) * force * 0.5;
-          point.y = point.originY - Math.sin(angle) * force * 0.5;
+          point.x = point.originX - Math.cos(angle) * force;
+          point.y = point.originY - Math.sin(angle) * force;
         } else {
-          point.x += (point.originX - point.x) * 0.08;
-          point.y += (point.originY - point.y) * 0.08;
+          point.x += (point.originX - point.x) * 0.1;
+          point.y += (point.originY - point.y) * 0.1;
         }
       });
 
-      // Draw radiating lines from focal points
-      const drawRadialLines = () => {
-        const focalPoints = [
-          { x: width * 0.08, y: height * 0.05, lineCount: 16, maxOpacity: 0.12 },
-          { x: width * 0.92, y: height * 0.08, lineCount: 14, maxOpacity: 0.10 },
-          { x: width * 0.05, y: height * 0.95, lineCount: 12, maxOpacity: 0.08 },
-          { x: width * 0.95, y: height * 0.92, lineCount: 14, maxOpacity: 0.10 },
-          { x: width * 0.5, y: height * 0.4, lineCount: 32, maxOpacity: 0.06 },
-        ];
+      // Draw diagonal lines
+      for (let i = 0; i < cols - 1; i++) {
+        for (let j = 0; j < rows - 1; j++) {
+          const idx = i * rows + j;
+          const point = points[idx];
+          const diagPoint = points[idx + rows + 1];
 
-        focalPoints.forEach((focal) => {
-          const angleOffset = Math.random() * 0.001; // Subtle movement
+          if (!point || !diagPoint) continue;
+
+          const centerX = (point.x + diagPoint.x) / 2;
+          const centerY = (point.y + diagPoint.y) / 2;
+          const distToMouse = Math.sqrt(
+            Math.pow(mouseRef.current.x - centerX, 2) + 
+            Math.pow(mouseRef.current.y - centerY, 2)
+          );
           
-          for (let i = 0; i < focal.lineCount; i++) {
-            const angle = angleOffset + (i / focal.lineCount) * Math.PI * 2;
-            const length = Math.max(width, height) * 2;
-            
-            const endX = focal.x + Math.cos(angle) * length;
-            const endY = focal.y + Math.sin(angle) * length;
+          const opacity = 0.03 + Math.max(0, (200 - distToMouse) / 200) * 0.08;
 
-            // Calculate opacity based on mouse proximity
-            const midX = focal.x + Math.cos(angle) * 200;
-            const midY = focal.y + Math.sin(angle) * 200;
-            const distToMouse = Math.sqrt(
-              Math.pow(mouseRef.current.x - midX, 2) + 
-              Math.pow(mouseRef.current.y - midY, 2)
-            );
-            const baseOpacity = focal.maxOpacity * 0.6;
-            const opacity = baseOpacity + Math.max(0, (350 - distToMouse) / 350) * focal.maxOpacity * 0.5;
-
-            ctx.beginPath();
-            ctx.moveTo(focal.x, focal.y);
-            ctx.lineTo(endX, endY);
-            ctx.strokeStyle = `rgba(180, 40, 40, ${opacity})`;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-          }
-        });
-      };
-
-      // Draw the mesh grid with parallax
-      const drawMesh = () => {
-        const { points, cols, rows } = mesh;
-
-        for (let i = 0; i < cols - 1; i++) {
-          for (let j = 0; j < rows - 1; j++) {
-            const idx = i * rows + j;
-            const point = points[idx];
-            const rightPoint = points[idx + rows];
-            const bottomPoint = points[idx + 1];
-            const diagPoint = points[idx + rows + 1];
-
-            if (!point || !rightPoint || !bottomPoint || !diagPoint) continue;
-
-            // Calculate distance from mouse for opacity
-            const centerX = (point.x + diagPoint.x) / 2;
-            const centerY = (point.y + diagPoint.y) / 2;
-            const distToMouse = Math.sqrt(
-              Math.pow(mouseRef.current.x - centerX, 2) + 
-              Math.pow(mouseRef.current.y - centerY, 2)
-            );
-            
-            const baseOpacity = 0.04;
-            const hoverOpacity = Math.max(0, (250 - distToMouse) / 250) * 0.12;
-            const opacity = baseOpacity + hoverOpacity;
-
-            // Draw grid lines
-            ctx.strokeStyle = `rgba(140, 30, 30, ${opacity * 0.4})`;
-            ctx.lineWidth = 0.3;
-
-            // Horizontal
-            ctx.beginPath();
-            ctx.moveTo(point.x, point.y);
-            ctx.lineTo(rightPoint.x, rightPoint.y);
-            ctx.stroke();
-
-            // Vertical
-            ctx.beginPath();
-            ctx.moveTo(point.x, point.y);
-            ctx.lineTo(bottomPoint.x, bottomPoint.y);
-            ctx.stroke();
-
-            // Diagonal (more prominent)
-            ctx.strokeStyle = `rgba(180, 40, 40, ${opacity})`;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(point.x, point.y);
-            ctx.lineTo(diagPoint.x, diagPoint.y);
-            ctx.stroke();
-          }
+          ctx.beginPath();
+          ctx.moveTo(point.x, point.y);
+          ctx.lineTo(diagPoint.x, diagPoint.y);
+          ctx.strokeStyle = `rgba(180, 40, 40, ${opacity})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
         }
-      };
+      }
 
       // Draw corner accent lines
-      const drawCornerAccents = () => {
-        const corners = [
-          { x: 0, y: 0, angles: [0.2, 0.4, 0.6, 0.8] },
-          { x: width, y: 0, angles: [2.4, 2.6, 2.8, 3.0] },
-          { x: 0, y: height, angles: [5.5, 5.7, 5.9, 6.1] },
-          { x: width, y: height, angles: [3.5, 3.7, 3.9, 4.1] },
-        ];
+      const corners = [
+        { x: 0, y: 0, angles: [0.3, 0.5, 0.7] },
+        { x: width, y: 0, angles: [2.5, 2.7, 2.9] },
+        { x: 0, y: height, angles: [5.6, 5.8, 6.0] },
+        { x: width, y: height, angles: [3.6, 3.8, 4.0] },
+      ];
 
-        corners.forEach(corner => {
-          corner.angles.forEach((angle, idx) => {
-            const length = 300 + idx * 100;
-            const endX = corner.x + Math.cos(angle) * length;
-            const endY = corner.y + Math.sin(angle) * length;
+      corners.forEach(corner => {
+        corner.angles.forEach((angle, idx) => {
+          const length = 400 + idx * 150;
+          const endX = corner.x + Math.cos(angle) * length;
+          const endY = corner.y + Math.sin(angle) * length;
 
-            const distToMouse = Math.sqrt(
-              Math.pow(mouseRef.current.x - corner.x, 2) + 
-              Math.pow(mouseRef.current.y - corner.y, 2)
-            );
-            const opacity = 0.15 + Math.max(0, (400 - distToMouse) / 400) * 0.15;
-
-            ctx.beginPath();
-            ctx.moveTo(corner.x, corner.y);
-            ctx.lineTo(endX, endY);
-            ctx.strokeStyle = `rgba(200, 50, 50, ${opacity})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          });
+          ctx.beginPath();
+          ctx.moveTo(corner.x, corner.y);
+          ctx.lineTo(endX, endY);
+          ctx.strokeStyle = 'rgba(180, 40, 40, 0.15)';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
         });
-      };
+      });
 
-      drawRadialLines();
-      drawMesh();
-      drawCornerAccents();
-
-      // Subtle mouse glow
-      const gradient = ctx.createRadialGradient(
-        mouseRef.current.x, mouseRef.current.y, 0,
-        mouseRef.current.x, mouseRef.current.y, 300
-      );
-      gradient.addColorStop(0, 'rgba(180, 40, 40, 0.06)');
-      gradient.addColorStop(0.4, 'rgba(180, 40, 40, 0.02)');
-      gradient.addColorStop(1, 'transparent');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
-
-      // Vignette effect
+      // Vignette
       const vignetteGradient = ctx.createRadialGradient(
         width / 2, height / 2, 0,
         width / 2, height / 2, Math.max(width, height) * 0.7
       );
       vignetteGradient.addColorStop(0, 'transparent');
-      vignetteGradient.addColorStop(0.7, 'transparent');
-      vignetteGradient.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
+      vignetteGradient.addColorStop(0.6, 'transparent');
+      vignetteGradient.addColorStop(1, 'rgba(0, 0, 0, 0.5)');
       ctx.fillStyle = vignetteGradient;
       ctx.fillRect(0, 0, width, height);
 
@@ -226,6 +290,7 @@ const MeshBackground = () => {
 
     const handleResize = () => {
       resizeCanvas();
+      initBlobs();
       mesh = createMeshPoints();
     };
 
