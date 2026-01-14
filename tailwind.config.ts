@@ -13,6 +13,11 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        display: ['Inter', 'sans-serif'],
+        accent: ['EB Garamond', 'serif'],
+        main: ['Poppins', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -22,6 +27,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -46,6 +52,16 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        glow: {
+          primary: "hsl(var(--glow-primary))",
+          secondary: "hsl(var(--glow-secondary))",
+          red: "hsl(var(--glow-red))",
+        },
+        line: {
+          primary: "hsl(var(--line-primary))",
+          secondary: "hsl(var(--line-secondary))",
+          tertiary: "hsl(var(--line-tertiary))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -72,43 +88,56 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "mesh-float": {
-          "0%, 100%": { transform: "translateY(0px) translateX(0px)" },
-          "25%": { transform: "translateY(-20px) translateX(10px)" },
-          "50%": { transform: "translateY(-10px) translateX(-5px)" },
-          "75%": { transform: "translateY(-15px) translateX(15px)" },
+        "fade-in": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        "mesh-pulse": {
-          "0%, 100%": { opacity: "0.3" },
-          "50%": { opacity: "0.8" },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(40px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        "marquee-scroll": {
-          "0%": { transform: "translateX(100%)" },
-          "100%": { transform: "translateX(-100%)" },
+        "scale-in": {
+          "0%": { opacity: "0", transform: "scale(0.95)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
         },
         "glow-pulse": {
           "0%, 100%": { 
             boxShadow: "0 0 20px hsl(var(--primary) / 0.3)",
-            borderColor: "hsl(var(--primary) / 0.3)"
           },
           "50%": { 
             boxShadow: "0 0 40px hsl(var(--primary) / 0.6)",
-            borderColor: "hsl(var(--primary) / 0.6)"
           },
         },
-        "fade-in": {
-          "0%": { opacity: "0", transform: "translateY(20px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
+        "float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "line-shoot": {
+          "0%": { opacity: "0", transform: "scaleX(0)" },
+          "10%": { opacity: "0.8", transform: "scaleX(0.3)" },
+          "50%": { opacity: "0.4", transform: "scaleX(1)" },
+          "100%": { opacity: "0", transform: "scaleX(1)" },
+        },
+        "particle-pulse": {
+          "0%, 100%": { transform: "scale(1)", opacity: "0.6" },
+          "50%": { transform: "scale(1.5)", opacity: "1" },
+        },
+        "spin-slow": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "mesh-float": "mesh-float 8s ease-in-out infinite",
-        "mesh-pulse": "mesh-pulse 4s ease-in-out infinite",
-        "marquee-scroll": "marquee-scroll 15s linear infinite",
-        "glow-pulse": "glow-pulse 3s ease-in-out infinite",
         "fade-in": "fade-in 0.6s ease-out",
+        "fade-in-up": "fade-in-up 0.8s ease-out",
+        "scale-in": "scale-in 0.3s ease-out",
+        "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+        "float": "float 4s ease-in-out infinite",
+        "line-shoot": "line-shoot 2s ease-out forwards",
+        "particle-pulse": "particle-pulse 2s ease-in-out infinite",
+        "spin-slow": "spin-slow 20s linear infinite",
       },
     },
   },
