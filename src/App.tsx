@@ -8,7 +8,7 @@ import Home from "./pages/Home";
 import Portfolio from "./pages/Portfolio";
 import NotFound from "./pages/NotFound";
 import Navigation from "@/components/Navigation";
-import CloudChamberBackground from "@/components/CloudChamberBackground";
+import MeshBackground from "@/components/MeshBackground";
 
 const queryClient = new QueryClient();
 
@@ -19,7 +19,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <CloudChamberBackground />
+          <MeshBackground />
           <Navigation />
           <Routes>
             <Route path="/" element={<Home />} />
