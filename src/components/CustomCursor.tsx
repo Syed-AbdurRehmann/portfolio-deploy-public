@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const CustomCursor = () => {
-  const [isVisible, setIsVisible] = React.useState(false);
-  const [isHovering, setIsHovering] = React.useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const isMobile = useIsMobile();
   
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
@@ -13,6 +15,12 @@ const CustomCursor = () => {
   const cursorYSpring = useSpring(cursorY, springConfig);
 
   useEffect(() => {
+    // Don't show custom cursor on mobile/touch devices
+    if (isMobile || (typeof window !== 'undefined' && 'ontouchstart' in window)) {
+      document.body.style.cursor = 'auto';
+      return;
+    }
+
     document.body.style.cursor = 'none';
     
     const handleMouseMove = (e: MouseEvent) => {
@@ -42,9 +50,10 @@ const CustomCursor = () => {
       document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [cursorX, cursorY]);
+  }, [cursorX, cursorY, isMobile]);
 
-  if (typeof window !== 'undefined' && 'ontouchstart' in window) {
+  // Don't render on mobile/touch devices
+  if (isMobile || (typeof window !== 'undefined' && 'ontouchstart' in window)) {
     return null;
   }
 
@@ -99,5 +108,4 @@ const CustomCursor = () => {
   );
 };
 
-import React from 'react';
 export default CustomCursor;

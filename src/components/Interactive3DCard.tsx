@@ -1,21 +1,25 @@
 import React, { useRef, useState, ReactNode } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Interactive3DCardProps {
   children: ReactNode;
   className?: string;
   glowColor?: string;
   onClick?: () => void;
+  isActive?: boolean; // For mobile video playing state
 }
 
 const Interactive3DCard: React.FC<Interactive3DCardProps> = ({ 
   children, 
   className = '',
   glowColor = 'rgba(66, 164, 245, 0.4)',
-  onClick
+  onClick,
+  isActive = false
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const isMobile = useIsMobile();
 
   // Motion values for smooth animations
   const mouseX = useMotionValue(0);
@@ -31,7 +35,7 @@ const Interactive3DCard: React.FC<Interactive3DCardProps> = ({
   const glareY = useSpring(useTransform(mouseY, [-0.5, 0.5], [0, 100]), springConfig);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (isMobile || !cardRef.current) return;
 
     const rect = cardRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -42,15 +46,46 @@ const Interactive3DCard: React.FC<Interactive3DCardProps> = ({
   };
 
   const handleMouseLeave = () => {
+    if (isMobile) return;
     mouseX.set(0);
     mouseY.set(0);
     setIsHovered(false);
   };
 
   const handleMouseEnter = () => {
+    if (isMobile) return;
     setIsHovered(true);
   };
 
+  // On mobile, show color when active (playing), otherwise grayscale
+  const showEffects = isMobile ? isActive : isHovered;
+
+  // Mobile-optimized render without 3D effects
+  if (isMobile) {
+    return (
+      <motion.div
+        ref={cardRef}
+        className={`interactive-card relative ${className}`}
+        onClick={onClick}
+        whileTap={{ scale: 0.98 }}
+      >
+        <motion.div
+          className="relative rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-neutral-900/95 to-neutral-950/90"
+          style={{
+            boxShadow: showEffects
+              ? `0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 20px ${glowColor}`
+              : '0 5px 15px -5px rgba(0, 0, 0, 0.4)',
+            filter: showEffects ? 'grayscale(0%)' : 'grayscale(100%)',
+            transition: 'filter 0.4s ease, box-shadow 0.3s ease',
+          }}
+        >
+          {children}
+        </motion.div>
+      </motion.div>
+    );
+  }
+
+  // Desktop version with full 3D effects
   return (
     <motion.div
       ref={cardRef}
