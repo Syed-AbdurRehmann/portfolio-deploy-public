@@ -75,10 +75,10 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
               )}
             </div>
 
-            {/* Minimal info bar at bottom */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent">
-              <h3 className="text-white font-semibold text-lg">{video.title}</h3>
-              <p className="text-neutral-400 text-sm">{video.category}</p>
+            {/* Minimal info bar at top right - positioned to not block video controls */}
+            <div className="absolute top-4 right-4 p-3 bg-black/70 backdrop-blur-sm rounded-lg max-w-[60%]">
+              <h3 className="text-white font-semibold text-sm truncate">{video.title}</h3>
+              <p className="text-neutral-400 text-xs">{video.category}</p>
             </div>
           </div>
         </DialogContent>
