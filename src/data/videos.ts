@@ -10,6 +10,62 @@ export interface Video {
 }
 
 export const videos: Video[] = [
+  // Featured Videos (Latest)
+  {
+    id: "featured-1",
+    title: "Featured Edit 1",
+    googleDriveLink: "https://drive.google.com/file/d/1JDg8xKFJ6N-Z2hIPwTf2MLnM1wgC9zhK/view",
+    category: "Popular Edits",
+    isLatest: true,
+    isVertical: true,
+    description: "Featured creative edit"
+  },
+  {
+    id: "featured-2",
+    title: "Featured Edit 2",
+    googleDriveLink: "https://drive.google.com/file/d/1CiRwgpYnsY2GTWzvaWwFtnZZKTtr_Y5R/view",
+    category: "Popular Edits",
+    isLatest: true,
+    isVertical: true,
+    description: "Featured viral content"
+  },
+  {
+    id: "featured-3",
+    title: "Featured Edit 3",
+    googleDriveLink: "https://drive.google.com/file/d/1p0o_n_FSfIxvJa11iFXxqM--GljKSXC9/view",
+    category: "Popular Edits",
+    isLatest: true,
+    isVertical: true,
+    description: "Featured dynamic edit"
+  },
+  {
+    id: "featured-4",
+    title: "Featured Edit 4",
+    googleDriveLink: "https://drive.google.com/file/d/1vDF7AsxlQk_lduK5pcoMix7s6gy61MHZ/view",
+    category: "Popular Edits",
+    isLatest: true,
+    isVertical: true,
+    description: "Featured stylish content"
+  },
+  {
+    id: "featured-5",
+    title: "Featured Edit 5",
+    googleDriveLink: "https://drive.google.com/file/d/1M8gCLXYv8UWV0EaEsmnEYeZCB7DS8Wba/view",
+    category: "Popular Edits",
+    isLatest: true,
+    isVertical: true,
+    description: "Featured trending edit"
+  },
+  {
+    id: "featured-6",
+    title: "Featured Edit 6",
+    googleDriveLink: "https://drive.google.com/file/d/1clSIymWsqMZjUlS-3Z0Vd-38kz9_3hc8/view",
+    category: "Popular Edits",
+    isLatest: true,
+    isVertical: true,
+    description: "Featured creative piece"
+  },
+
   // Anime Edits
   {
     id: "anime-1",
@@ -72,7 +128,7 @@ export const videos: Video[] = [
     title: "Popular Edit 2",
     googleDriveLink: "https://drive.google.com/file/d/1g1idcrso4OhSD8Hqg2PuBha7fYKMgojR/preview",
     category: "Popular Edits",
-    isLatest: true,
+    isLatest: false,
     isVertical: true,
     description: "High-energy popular content edit"
   },
@@ -213,25 +269,16 @@ export const videos: Video[] = [
     title: "HeadCam Reel 2",
     googleDriveLink: "https://drive.google.com/file/d/1Btw9AAFZaeHZtzUqEBBeHysS6ml86H6w/preview",
     category: "HeadCam Reels",
-    isLatest: true,
+    isLatest: false,
     isVertical: true,
     description: "Action-packed headcam content"
   },
-  // {
-  //   id: "headcam-3",
-  //   title: "Devin Jatho Style",
-  //   googleDriveLink: "https://drive.google.com/file/d/1CTB0DXd1zlETrHKDxOJKCipniCzbMZNL/preview",
-  //   category: "HeadCam Reels",
-  //   isLatest: true,
-  //   isVertical: true,
-  //   description: "Devin Jatho inspired edit"
-  // },
   {
     id: "headcam-4",
     title: "HeadCam Reel 4",
     googleDriveLink: "https://drive.google.com/file/d/1M1o7nev5prddlGnwLRqZJp4DHpNiRqhC/preview",
     category: "HeadCam Reels",
-    isLatest: true,
+    isLatest: false,
     isVertical: true,
     description: "First-person perspective edit"
   },
@@ -285,7 +332,7 @@ export const videos: Video[] = [
     title: "HeadCam Reel 10",
     googleDriveLink: "https://drive.google.com/file/d/125405h7ATHvK9tbZlsQLs9S3SRCrYYry/preview",
     category: "HeadCam Reels",
-    isLatest: true,
+    isLatest: false,
     isVertical: true,
     description: "POV adventure edit"
   },
@@ -352,7 +399,7 @@ export const videos: Video[] = [
     title: "Faceless Video 1",
     googleDriveLink: "https://drive.google.com/file/d/18UFujiasmkexVlCpUkPhuTlVz18Mc_y1/preview",
     category: "Face Less",
-    isLatest: true,
+    isLatest: false,
     isVertical: true,
     description: "Faceless content creation"
   },
