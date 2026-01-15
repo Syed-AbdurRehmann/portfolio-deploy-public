@@ -21,18 +21,28 @@ const Interactive3DCard: React.FC<Interactive3DCardProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const isMobile = useIsMobile();
 
-  // Motion values for smooth animations
+  // Motion values for smooth animations - MUST be called unconditionally
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
   // Spring configs for smooth movement
   const springConfig = { damping: 20, stiffness: 300 };
-  const rotateXSpring = useSpring(useTransform(mouseY, [-0.5, 0.5], [15, -15]), springConfig);
-  const rotateYSpring = useSpring(useTransform(mouseX, [-0.5, 0.5], [-15, 15]), springConfig);
+  const rotateXTransform = useTransform(mouseY, [-0.5, 0.5], [15, -15]);
+  const rotateYTransform = useTransform(mouseX, [-0.5, 0.5], [-15, 15]);
+  const rotateXSpring = useSpring(rotateXTransform, springConfig);
+  const rotateYSpring = useSpring(rotateYTransform, springConfig);
   
-  // Glare position
-  const glareX = useSpring(useTransform(mouseX, [-0.5, 0.5], [0, 100]), springConfig);
-  const glareY = useSpring(useTransform(mouseY, [-0.5, 0.5], [0, 100]), springConfig);
+  // Glare position - MUST be called unconditionally
+  const glareXTransform = useTransform(mouseX, [-0.5, 0.5], [0, 100]);
+  const glareYTransform = useTransform(mouseY, [-0.5, 0.5], [0, 100]);
+  const glareX = useSpring(glareXTransform, springConfig);
+  const glareY = useSpring(glareYTransform, springConfig);
+  
+  // Glare background - computed from spring values
+  const glareBackground = useTransform(
+    [glareX, glareY],
+    ([x, y]) => `radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,0.15) 0%, transparent 50%)`
+  );
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isMobile || !cardRef.current) return;
@@ -136,10 +146,7 @@ const Interactive3DCard: React.FC<Interactive3DCardProps> = ({
           <motion.div
             className="absolute inset-0 pointer-events-none z-10"
             style={{
-              background: useTransform(
-                [glareX, glareY],
-                ([x, y]) => `radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,0.15) 0%, transparent 50%)`
-              ),
+              background: glareBackground,
               opacity: isHovered ? 1 : 0,
             }}
             transition={{ duration: 0.2 }}
