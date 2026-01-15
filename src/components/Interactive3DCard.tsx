@@ -7,15 +7,13 @@ interface Interactive3DCardProps {
   className?: string;
   glowColor?: string;
   onClick?: () => void;
-  isActive?: boolean; // For mobile video playing state
 }
 
 const Interactive3DCard: React.FC<Interactive3DCardProps> = ({ 
   children, 
   className = '',
   glowColor = 'rgba(66, 164, 245, 0.4)',
-  onClick,
-  isActive = false
+  onClick
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -67,10 +65,7 @@ const Interactive3DCard: React.FC<Interactive3DCardProps> = ({
     setIsHovered(true);
   };
 
-  // On mobile, show color when active (playing), otherwise grayscale
-  const showEffects = isMobile ? isActive : isHovered;
-
-  // Mobile-optimized render without 3D effects
+  // Mobile-optimized render - NO grayscale, simple tap interaction
   if (isMobile) {
     return (
       <motion.div
@@ -82,11 +77,7 @@ const Interactive3DCard: React.FC<Interactive3DCardProps> = ({
         <motion.div
           className="relative rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-neutral-900/95 to-neutral-950/90"
           style={{
-            boxShadow: showEffects
-              ? `0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 20px ${glowColor}`
-              : '0 5px 15px -5px rgba(0, 0, 0, 0.4)',
-            filter: showEffects ? 'grayscale(0%)' : 'grayscale(100%)',
-            transition: 'filter 0.4s ease, box-shadow 0.3s ease',
+            boxShadow: '0 5px 15px -5px rgba(0, 0, 0, 0.4)',
           }}
         >
           {children}
@@ -95,7 +86,7 @@ const Interactive3DCard: React.FC<Interactive3DCardProps> = ({
     );
   }
 
-  // Desktop version with full 3D effects
+  // Desktop version with full 3D effects and grayscale
   return (
     <motion.div
       ref={cardRef}
@@ -137,7 +128,7 @@ const Interactive3DCard: React.FC<Interactive3DCardProps> = ({
             boxShadow: isHovered 
               ? `0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 40px ${glowColor}`
               : '0 10px 30px -10px rgba(0, 0, 0, 0.4)',
-            // Grayscale to color effect
+            // Grayscale to color effect - ONLY on desktop
             filter: isHovered ? 'grayscale(0%)' : 'grayscale(100%)',
             transition: 'filter 0.4s ease, box-shadow 0.3s ease',
           }}
@@ -149,7 +140,6 @@ const Interactive3DCard: React.FC<Interactive3DCardProps> = ({
               background: glareBackground,
               opacity: isHovered ? 1 : 0,
             }}
-            transition={{ duration: 0.2 }}
           />
 
           {/* Scanline effect */}

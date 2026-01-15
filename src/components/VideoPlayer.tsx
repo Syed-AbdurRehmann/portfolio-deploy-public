@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { ExternalLink } from "lucide-react";
+import { X, ExternalLink } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Video } from "@/data/videos";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "framer-motion";
 
 interface VideoPlayerProps {
   video: Video | null;
@@ -12,6 +14,7 @@ interface VideoPlayerProps {
 
 const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
   const [embedUrl, setEmbedUrl] = useState<string>("");
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (video?.googleDriveLink) {
@@ -31,6 +34,59 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
 
   if (!video) return null;
 
+  // Mobile optimized layout
+  if (isMobile) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="w-[100vw] max-w-[100vw] h-[100vh] max-h-[100vh] p-0 bg-black border-0 rounded-none [&>button]:hidden">
+          <div className="relative flex flex-col h-full w-full">
+            {/* Close button - top left */}
+            <motion.button
+              className="absolute top-4 left-4 z-50 w-10 h-10 rounded-full bg-black/80 backdrop-blur-sm flex items-center justify-center border border-white/20"
+              onClick={onClose}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <X className="w-5 h-5 text-white" />
+            </motion.button>
+
+            {/* Video Player - Full screen for mobile */}
+            <div className={`flex-1 flex items-center justify-center bg-black ${video.isVertical ? '' : 'px-0'}`}>
+              {embedUrl ? (
+                <iframe
+                  src={embedUrl}
+                  className={`${video.isVertical ? 'w-full h-full' : 'w-full aspect-video'}`}
+                  allowFullScreen
+                  allow="autoplay"
+                  title={video.title}
+                />
+              ) : (
+                <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
+                  <div className="text-center p-6">
+                    <p className="text-neutral-400 mb-4">Unable to load video</p>
+                    <Button onClick={handleOpenInDrive} variant="outline" size="sm">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      View in Drive
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Minimal info bar at bottom */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent">
+              <h3 className="text-white font-semibold text-lg">{video.title}</h3>
+              <p className="text-neutral-400 text-sm">{video.category}</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Desktop layout
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-7xl w-[95vw] h-[90vh] p-0 bg-black border-primary/20">
