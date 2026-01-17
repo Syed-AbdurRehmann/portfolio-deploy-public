@@ -66,20 +66,20 @@ const Video3DCard: React.FC<Video3DCardProps> = ({ video, onPlay }) => {
             transition={{ duration: 0.2 }}
           >
             <div 
-              className={`${isMobile ? 'w-14 h-14' : 'w-16 h-16'} rounded-full flex items-center justify-center backdrop-blur-sm`}
+              className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} rounded-full flex items-center justify-center backdrop-blur-sm`}
               style={{
                 background: 'linear-gradient(135deg, rgba(66, 164, 245, 0.9), rgba(66, 164, 245, 0.7))',
                 boxShadow: '0 0 30px rgba(66, 164, 245, 0.5), inset 0 0 20px rgba(255,255,255,0.1)',
               }}
             >
-              <Play className={`${isMobile ? 'w-6 h-6' : 'w-7 h-7'} text-white ml-1`} fill="currentColor" />
+              <Play className={`${isMobile ? 'w-4 h-4' : 'w-6 h-6'} text-white ml-0.5`} fill="currentColor" />
             </div>
           </motion.div>
 
           {/* Category badge */}
-          <div className="absolute top-4 left-4 z-10">
+          <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
             <span 
-              className="px-3 py-1 text-xs font-medium rounded-full backdrop-blur-sm"
+              className="px-2 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs font-medium rounded-full backdrop-blur-sm"
               style={{
                 background: 'rgba(66, 164, 245, 0.2)',
                 border: '1px solid rgba(66, 164, 245, 0.4)',
@@ -92,9 +92,9 @@ const Video3DCard: React.FC<Video3DCardProps> = ({ video, onPlay }) => {
 
           {/* Latest badge */}
           {video.isLatest && (
-            <div className="absolute top-4 right-4 z-10">
+            <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
               <motion.span 
-                className="px-3 py-1 text-xs font-medium rounded-full backdrop-blur-sm"
+                className="px-2 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs font-medium rounded-full backdrop-blur-sm"
                 style={{
                   background: 'rgba(220, 60, 60, 0.2)',
                   border: '1px solid rgba(220, 60, 60, 0.5)',
@@ -112,12 +112,12 @@ const Video3DCard: React.FC<Video3DCardProps> = ({ video, onPlay }) => {
         </div>
 
         {/* Content */}
-        <div className="p-5 bg-gradient-to-b from-neutral-900/50 to-neutral-950/80">
-          <h3 className="text-lg font-bold text-white mb-2 line-clamp-1">
+        <div className="p-3 md:p-4 bg-gradient-to-b from-neutral-900/50 to-neutral-950/80">
+          <h3 className="text-sm md:text-base font-bold text-white mb-1 line-clamp-1">
             {video.title}
           </h3>
           {video.description && (
-            <p className="text-sm text-neutral-400 line-clamp-2">
+            <p className="text-xs text-neutral-400 line-clamp-1 hidden md:block">
               {video.description}
             </p>
           )}
