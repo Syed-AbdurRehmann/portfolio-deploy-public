@@ -9,6 +9,7 @@ import Portfolio from "./pages/Portfolio";
 import NotFound from "./pages/NotFound";
 import Navigation from "@/components/Navigation";
 import MeshBackground from "@/components/MeshBackground";
+import ShaderBackground from "@/components/ui/shader-background";
 import CustomCursor from "@/components/CustomCursor";
 
 const queryClient = new QueryClient();
@@ -20,15 +21,18 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <MeshBackground />
-          <CustomCursor />
-          <Navigation />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/gallery" element={<Portfolio />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div className="overflow-x-hidden w-full">
+            <ShaderBackground />
+            <MeshBackground />
+            <CustomCursor />
+            <Navigation />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/gallery" element={<Portfolio />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
         </BrowserRouter>
       </TooltipProvider>
     </HeroUIProvider>

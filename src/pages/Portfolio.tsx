@@ -25,8 +25,8 @@ const Portfolio = () => {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 relative z-10">
-      <div className="container mx-auto">
+    <div className="min-h-screen pt-24 pb-16 px-3 md:px-4 relative z-10 overflow-x-hidden">
+      <div className="container mx-auto max-w-7xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -72,7 +72,7 @@ const Portfolio = () => {
         <div id="video-grid" className="scroll-mt-32">
           <motion.div
             layout
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
           >
             {filteredVideos.map((video, index) => (
               <motion.div

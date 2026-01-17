@@ -87,9 +87,9 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen relative z-10">
+    <div className="min-h-screen relative z-10 overflow-x-hidden">
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-4 relative pt-20">
+      <section className="min-h-screen flex flex-col items-center justify-center px-4 relative pt-20 overflow-hidden">
         <div className="text-center max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -233,7 +233,7 @@ const Home = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6 mb-12">
             {latestVideos.slice(0, 6).map((video, index) => (
               <motion.div
                 key={video.id}
