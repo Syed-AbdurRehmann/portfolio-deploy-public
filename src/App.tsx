@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import Navigation from "@/components/Navigation";
 import MeshBackground from "@/components/MeshBackground";
 import ShaderBackground from "@/components/ui/shader-background";
+import { WebGLShader } from "@/components/ui/web-gl-shader";
 import CustomCursor from "@/components/CustomCursor";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
         <BrowserRouter>
           <div className="overflow-x-hidden w-full">
             <ShaderBackground />
+            <WebGLShader />
             <MeshBackground />
             <CustomCursor />
             <Navigation />
