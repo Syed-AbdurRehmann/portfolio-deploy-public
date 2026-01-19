@@ -8,7 +8,7 @@ import Home from "./pages/Home";
 import Portfolio from "./pages/Portfolio";
 import NotFound from "./pages/NotFound";
 import Navigation from "@/components/Navigation";
-import { WebGLShader } from "@/components/ui/web-gl-shader";
+import { NeuralNetworkBackground } from "@/components/ui/neural-network-background";
 import CustomCursor from "@/components/CustomCursor";
 
 const queryClient = new QueryClient();
@@ -21,7 +21,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <div className="overflow-x-hidden w-full max-w-full">
-            <WebGLShader />
+            <NeuralNetworkBackground />
             <CustomCursor />
             <Navigation />
             <Routes>
