@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { Send, Mail, MapPin, MessageCircle } from 'lucide-react';
 import PearlButton from './PearlButton';
 
 const ContactSection: React.FC = () => {
@@ -13,7 +13,6 @@ const ContactSection: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission - would integrate with backend
     const whatsappMessage = `Hi! I'm ${formData.name}. ${formData.message}`;
     window.open(`https://wa.me/923324112404?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
   };
@@ -26,7 +25,7 @@ const ContactSection: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-20 px-4 relative">
+    <section id="contact" className="py-12 md:py-20 px-3 md:px-4 relative overflow-x-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
       
@@ -35,79 +34,85 @@ const ContactSection: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16 px-2"
         >
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
+          <h2 className="text-2xl md:text-4xl font-display font-bold text-foreground mb-4">
             Let's Create Something <span className="text-primary">Amazing</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto font-main">
+          <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto font-main">
             Ready to elevate your content? Get in touch for a free consultation and let's discuss your project
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12">
           {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="space-y-8"
+            className="space-y-6 md:space-y-8"
           >
-            <div>
-              <h3 className="text-2xl font-display font-bold text-foreground mb-6">
+            <div className="px-1">
+              <h3 className="text-xl md:text-2xl font-display font-bold text-foreground mb-4 md:mb-6">
                 Get in Touch
               </h3>
-              <p className="text-muted-foreground font-main mb-8">
+              <p className="text-sm md:text-base text-muted-foreground font-main mb-6 md:mb-8 leading-relaxed">
                 I'm always excited to work on new projects. Whether you need a single video edit or ongoing content creation, I'm here to help bring your vision to life.
               </p>
             </div>
 
             {/* Contact methods */}
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               <a 
                 href="https://wa.me/923324112404" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 rounded-xl bg-card/50 border border-border/50 hover:border-primary/40 transition-all group"
+                className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card/50 border border-border/50 hover:border-primary/40 transition-all group"
               >
-                <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <MessageCircle className="w-5 h-5 text-green-500" />
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                  <MessageCircle className="w-4 h-4 md:w-5 md:h-5 text-green-500" />
                 </div>
-                <div>
-                  <div className="text-sm text-muted-foreground font-main">WhatsApp</div>
-                  <div className="text-foreground font-medium group-hover:text-primary transition-colors">+92 332 411 2404</div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs md:text-sm text-muted-foreground font-main">WhatsApp</div>
+                  <div className="text-sm md:text-base text-foreground font-medium group-hover:text-primary transition-colors truncate">
+                    +92 332 411 2404
+                  </div>
                 </div>
               </a>
 
               <a 
                 href="mailto:contact@syedabdurrehman.com"
-                className="flex items-center gap-4 p-4 rounded-xl bg-card/50 border border-border/50 hover:border-primary/40 transition-all group"
+                className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card/50 border border-border/50 hover:border-primary/40 transition-all group"
               >
-                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Mail className="w-5 h-5 text-primary" />
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 </div>
-                <div>
-                  <div className="text-sm text-muted-foreground font-main">Email</div>
-                  <div className="text-foreground font-medium group-hover:text-primary transition-colors">contact@syedabdurrehman.com</div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs md:text-sm text-muted-foreground font-main">Email</div>
+                  <div className="text-sm md:text-base text-foreground font-medium group-hover:text-primary transition-colors break-all">
+                    contact@syedabdurrehman.com
+                  </div>
                 </div>
               </a>
 
-              <div className="flex items-center gap-4 p-4 rounded-xl bg-card/50 border border-border/50">
-                <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-accent" />
+              <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card/50 border border-border/50">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-4 h-4 md:w-5 md:h-5 text-accent" />
                 </div>
-                <div>
-                  <div className="text-sm text-muted-foreground font-main">Location</div>
-                  <div className="text-foreground font-medium">Available Worldwide (Remote)</div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs md:text-sm text-muted-foreground font-main">Location</div>
+                  <div className="text-sm md:text-base text-foreground font-medium">
+                    Available Worldwide (Remote)
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Quick CTA */}
-            <div className="pt-4">
+            <div className="pt-2 md:pt-4">
               <a href="https://wa.me/923324112404" target="_blank" rel="noopener noreferrer">
-                <PearlButton size="lg" className="w-full">
-                  <MessageCircle className="w-5 h-5" />
+                <PearlButton size="lg" className="w-full text-sm md:text-base">
+                  <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
                   Book a Free Consultation
                 </PearlButton>
               </a>
@@ -120,7 +125,7 @@ const ContactSection: React.FC = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <form onSubmit={handleSubmit} className="space-y-6 p-8 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm">
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6 p-4 md:p-8 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2 font-main">Name</label>
                 <input
@@ -129,7 +134,7 @@ const ContactSection: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground transition-all font-main"
+                  className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground transition-all font-main text-sm md:text-base"
                   placeholder="Your name"
                 />
               </div>
@@ -142,7 +147,7 @@ const ContactSection: React.FC = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground transition-all font-main"
+                  className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground transition-all font-main text-sm md:text-base"
                   placeholder="your@email.com"
                 />
               </div>
@@ -154,7 +159,7 @@ const ContactSection: React.FC = () => {
                   value={formData.project}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground transition-all font-main"
+                  className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground transition-all font-main text-sm md:text-base"
                 >
                   <option value="">Select a project type</option>
                   <option value="short-form">Short Form Content (Reels/TikTok)</option>
@@ -173,14 +178,14 @@ const ContactSection: React.FC = () => {
                   onChange={handleChange}
                   required
                   rows={4}
-                  className="w-full px-4 py-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground transition-all resize-none font-main"
+                  className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-muted/50 border border-border focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground transition-all resize-none font-main text-sm md:text-base"
                   placeholder="Tell me about your project..."
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full px-6 py-4 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 group"
+                className="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 group text-sm md:text-base"
               >
                 Send Message
                 <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

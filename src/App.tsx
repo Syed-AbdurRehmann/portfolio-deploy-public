@@ -8,8 +8,6 @@ import Home from "./pages/Home";
 import Portfolio from "./pages/Portfolio";
 import NotFound from "./pages/NotFound";
 import Navigation from "@/components/Navigation";
-import MeshBackground from "@/components/MeshBackground";
-import ShaderBackground from "@/components/ui/shader-background";
 import { WebGLShader } from "@/components/ui/web-gl-shader";
 import CustomCursor from "@/components/CustomCursor";
 
@@ -22,10 +20,8 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="overflow-x-hidden w-full">
-            <ShaderBackground />
+          <div className="overflow-x-hidden w-full max-w-full">
             <WebGLShader />
-            <MeshBackground />
             <CustomCursor />
             <Navigation />
             <Routes>
