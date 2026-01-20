@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useMemo, useState, useEffect } from 'react';
-import { Canvas, useFrame, extend } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -155,23 +155,20 @@ const CPPNShaderMaterial = shaderMaterial(
   fragmentShader
 );
 
-// Extend Three.js with our custom material
-extend({ CPPNShaderMaterial });
 
 function ShaderPlane() {
-  const materialRef = useRef<any>(null);
+  const material = useMemo(() => new (CPPNShaderMaterial as any)(), []);
 
   useFrame((state) => {
-    if (!materialRef.current) return;
-    materialRef.current.iTime = state.clock.elapsedTime;
+    material.iTime = state.clock.elapsedTime;
     const { width, height } = state.size;
-    materialRef.current.iResolution.set(width, height);
+    material.iResolution.set(width, height);
   });
 
   return (
     <mesh>
       <planeGeometry args={[2, 2]} />
-      <cPPNShaderMaterial ref={materialRef} />
+      <primitive object={material} attach="material" />
     </mesh>
   );
 }
@@ -210,10 +207,5 @@ export function NeuralNetworkBackground() {
   );
 }
 
-declare module '@react-three/fiber' {
-  interface ThreeElements {
-    cPPNShaderMaterial: any;
-  }
-}
 
 export default NeuralNetworkBackground;
