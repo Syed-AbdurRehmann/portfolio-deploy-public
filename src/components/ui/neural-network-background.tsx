@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame, extend } from '@react-three/fiber';
 import { shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
@@ -158,15 +158,6 @@ const CPPNShaderMaterial = shaderMaterial(
 // Extend Three.js with our custom material
 extend({ CPPNShaderMaterial });
 
-// Declare the custom element for TypeScript
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      cPPNShaderMaterial: any;
-    }
-  }
-}
-
 function ShaderPlane() {
   const materialRef = useRef<any>(null);
 
@@ -186,32 +177,43 @@ function ShaderPlane() {
 }
 
 export function NeuralNetworkBackground() {
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const camera = useMemo(() => ({ 
     position: [0, 0, 1] as [number, number, number], 
     fov: 75, 
     near: 0.1, 
     far: 1000 
   }), []);
-  
+
+  // Prevent SSR issues
+  if (!isClient) {
+    return <div className="fixed inset-0 -z-10 bg-black" />;
+  }
+
   return (
-    <div className="fixed inset-0 w-full h-full" style={{ zIndex: -10 }}>
+    <div className="fixed inset-0 -z-10">
       <Canvas
         camera={camera}
-        style={{ width: '100%', height: '100%' }}
         gl={{ antialias: false, alpha: false }}
-        dpr={[1, 2]}
+        dpr={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 1.5) : 1}
+        style={{ background: '#000' }}
       >
         <ShaderPlane />
       </Canvas>
-      {/* Subtle overlay for better text readability */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.3) 100%)'
-        }}
-      />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50 pointer-events-none" />
     </div>
   );
+}
+
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    cPPNShaderMaterial: any;
+  }
 }
 
 export default NeuralNetworkBackground;
