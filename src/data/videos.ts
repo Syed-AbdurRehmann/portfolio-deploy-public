@@ -431,6 +431,41 @@ export const getGoogleDriveFileId = (googleDriveLink: string) => {
   return fromQuery || null;
 };
 
+const appendDriveQueryIfPresent = (url: string, query: string | null) => {
+  if (!query) {
+    return url;
+  }
+
+  const sanitized = query.startsWith("?") ? query.slice(1) : query;
+  if (!sanitized) {
+    return url;
+  }
+
+  return `${url}${url.includes("?") ? "&" : "?"}${sanitized}`;
+};
+
+export const normalizeGoogleDrivePreviewLink = (googleDriveLink: string) => {
+  const input = String(googleDriveLink || "").trim();
+  if (!input) {
+    return "";
+  }
+
+  try {
+    const parsed = new URL(input);
+    if (!/drive\.google\.com$/i.test(parsed.hostname)) {
+      return input;
+    }
+
+    if (parsed.pathname.endsWith("/view")) {
+      parsed.pathname = parsed.pathname.replace(/\/view$/, "/preview");
+    }
+
+    return parsed.toString();
+  } catch {
+    return input.replace(/\/view(\?.*)?$/, (_match, query = "") => `/preview${query}`);
+  }
+};
+
 export const getVideoThumbnailCandidates = (googleDriveLink: string, width = 900) => {
   const fileId = getGoogleDriveFileId(googleDriveLink);
   if (!fileId) {
@@ -438,11 +473,12 @@ export const getVideoThumbnailCandidates = (googleDriveLink: string, width = 900
   }
 
   const safeWidth = Math.max(320, Math.min(width, 1600));
+  const query = googleDriveLink.includes("?") ? googleDriveLink.slice(googleDriveLink.indexOf("?")) : null;
 
   return [
-    `https://drive.google.com/thumbnail?id=${fileId}&sz=w${safeWidth}`,
+    appendDriveQueryIfPresent(`https://drive.google.com/thumbnail?id=${fileId}&sz=w${safeWidth}`, query),
     `https://lh3.googleusercontent.com/d/${fileId}=w${safeWidth}`,
-    `https://drive.google.com/uc?export=view&id=${fileId}`,
+    appendDriveQueryIfPresent(`https://drive.google.com/uc?export=view&id=${fileId}`, query),
   ];
 };
 

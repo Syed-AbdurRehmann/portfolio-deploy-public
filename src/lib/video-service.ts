@@ -37,7 +37,22 @@ const ADMIN_TOKEN_KEY = "portfolio_admin_token";
 
 export const isApiConfigured = true;
 
-const normalizeDriveLink = (link: string) => link.replace(/\/view(\?.*)?$/, "/preview");
+const normalizeDriveLink = (link: string) => {
+  const input = String(link || "").trim();
+  if (!input) {
+    return "";
+  }
+
+  try {
+    const parsed = new URL(input);
+    if (parsed.pathname.endsWith("/view")) {
+      parsed.pathname = parsed.pathname.replace(/\/view$/, "/preview");
+    }
+    return parsed.toString();
+  } catch {
+    return input.replace(/\/view(\?.*)?$/, (_match, query = "") => `/preview${query}`);
+  }
+};
 
 const mapVideoInput = (input: VideoInput): VideoInput => ({
   title: input.title.trim(),

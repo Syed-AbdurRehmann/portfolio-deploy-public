@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { X, ExternalLink } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Video, getGoogleDriveFileId } from "@/data/videos";
+import { Video, normalizeGoogleDrivePreviewLink } from "@/data/videos";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
 
@@ -45,10 +45,8 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
 
   useEffect(() => {
     if (video?.googleDriveLink) {
-      const fileId = getGoogleDriveFileId(video.googleDriveLink);
-      if (fileId) {
-        setEmbedUrl(`https://drive.google.com/file/d/${fileId}/preview?autoplay=1`);
-      }
+      const previewUrl = normalizeGoogleDrivePreviewLink(video.googleDriveLink);
+      setEmbedUrl(previewUrl);
       return;
     }
 

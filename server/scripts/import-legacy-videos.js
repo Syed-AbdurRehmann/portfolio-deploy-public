@@ -24,7 +24,22 @@ const ensureSchema = (db) => {
   `);
 };
 
-const normalizeDriveLink = (link) => String(link || "").replace(/\/view(\?.*)?$/, "/preview");
+const normalizeDriveLink = (link) => {
+  const input = String(link || "").trim();
+  if (!input) {
+    return "";
+  }
+
+  try {
+    const parsed = new URL(input);
+    if (parsed.pathname.endsWith("/view")) {
+      parsed.pathname = parsed.pathname.replace(/\/view$/, "/preview");
+    }
+    return parsed.toString();
+  } catch {
+    return input.replace(/\/view(\?.*)?$/, (_match, query = "") => `/preview${query}`);
+  }
+};
 
 const readLegacyVideos = () => {
   if (!fs.existsSync(legacyVideosPath)) {

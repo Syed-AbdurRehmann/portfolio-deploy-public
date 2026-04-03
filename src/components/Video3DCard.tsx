@@ -36,7 +36,7 @@ const Video3DCard: React.FC<Video3DCardProps> = ({ video, onPlay }) => {
         <div className="relative aspect-[9/16] bg-neutral-900">
           <VideoThumbnailImage
             googleDriveLink={video.googleDriveLink}
-            width={shouldReduceEffects ? 720 : 1080}
+            width={shouldReduceEffects ? 480 : 640}
             alt={video.title}
             className="w-full h-full object-cover"
             loading="lazy"
