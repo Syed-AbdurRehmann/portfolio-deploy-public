@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { Mail, MapPin, MessageCircle } from 'lucide-react';
 import PearlButton from './PearlButton';
+
+const CONTACT_EMAIL = 'syed4abdurrehman@gmail.com';
+const WHATSAPP_NUMBER = '923324112404';
 
 const PROJECT_TYPE_LABELS: Record<string, string> = {
   'short-form': 'Short Form Content (Reels/TikTok)',
@@ -20,21 +23,66 @@ const ContactSection: React.FC = () => {
   });
   const [submitFeedback, setSubmitFeedback] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      email: '',
+      project: '',
+      message: '',
+    });
+  };
+
+  const getInquiryPayload = () => {
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const message = formData.message.trim();
+
+    if (!name || !email || !formData.project || !message) {
+      return null;
+    }
+
     const projectLabel = PROJECT_TYPE_LABELS[formData.project] || 'Not specified';
-    const whatsappMessage = [
+    const messageLines = [
       'Hi Syed, I want to discuss a project.',
       '',
-      `Name: ${formData.name.trim()}`,
-      `Email: ${formData.email.trim()}`,
+      `Name: ${name}`,
+      `Email: ${email}`,
       `Project Type: ${projectLabel}`,
       '',
       'Message:',
-      formData.message.trim(),
-    ].join('\n');
+      message,
+    ];
 
-    const whatsappUrl = `https://wa.me/923324112404?text=${encodeURIComponent(whatsappMessage)}`;
+    return {
+      projectLabel,
+      whatsappText: messageLines.join('\n'),
+      emailBody: messageLines.join('\n'),
+    };
+  };
+
+  const handleEmailSubmit = () => {
+    const payload = getInquiryPayload();
+    if (!payload) {
+      setSubmitFeedback('Please complete all fields before sending.');
+      return;
+    }
+
+    const subject = encodeURIComponent(`Project Inquiry - ${payload.projectLabel}`);
+    const body = encodeURIComponent(payload.emailBody);
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+
+    setSubmitFeedback('Opening your email app with prefilled details...');
+    resetForm();
+  };
+
+  const handleWhatsAppSubmit = () => {
+    const payload = getInquiryPayload();
+    if (!payload) {
+      setSubmitFeedback('Please complete all fields before sending.');
+      return;
+    }
+
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(payload.whatsappText)}`;
     const popup = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
 
     if (!popup) {
@@ -42,12 +90,12 @@ const ContactSection: React.FC = () => {
     }
 
     setSubmitFeedback('Opening WhatsApp with your message...');
-    setFormData({
-      name: '',
-      email: '',
-      project: '',
-      message: '',
-    });
+    resetForm();
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleEmailSubmit();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -94,7 +142,7 @@ const ContactSection: React.FC = () => {
             {/* Contact methods */}
             <div className="space-y-3 md:space-y-4">
               <a 
-                href="https://wa.me/923324112404" 
+                href={`https://wa.me/${WHATSAPP_NUMBER}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card/50 border border-border/50 hover:border-primary/40 transition-all group"
@@ -111,7 +159,7 @@ const ContactSection: React.FC = () => {
               </a>
 
               <a 
-                href="mailto:contact@syedabdurrehman.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card/50 border border-border/50 hover:border-primary/40 transition-all group"
               >
                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
@@ -120,7 +168,7 @@ const ContactSection: React.FC = () => {
                 <div className="min-w-0 flex-1">
                   <div className="text-xs md:text-sm text-muted-foreground font-main">Email</div>
                   <div className="text-sm md:text-base text-foreground font-medium group-hover:text-primary transition-colors break-all">
-                    contact@syedabdurrehman.com
+                    {CONTACT_EMAIL}
                   </div>
                 </div>
               </a>
@@ -140,7 +188,7 @@ const ContactSection: React.FC = () => {
 
             {/* Quick CTA */}
             <div className="pt-2 md:pt-4">
-              <a href="https://wa.me/923324112404" target="_blank" rel="noopener noreferrer">
+              <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer">
                 <PearlButton size="lg" className="w-full text-sm md:text-base">
                   <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
                   Book a Free Consultation
@@ -217,16 +265,27 @@ const ContactSection: React.FC = () => {
                 />
               </div>
 
-              <button
-                type="submit"
-                className="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 group text-sm md:text-base"
-              >
-                Send Message
-                <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="submit"
+                  className="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 group text-sm md:text-base"
+                >
+                  Send via Email
+                  <Mail className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleWhatsAppSubmit}
+                  className="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl border border-green-500/50 text-green-400 font-semibold hover:bg-green-500/10 transition-all flex items-center justify-center gap-2 text-sm md:text-base"
+                >
+                  Send on WhatsApp
+                  <MessageCircle className="w-4 h-4" />
+                </button>
+              </div>
 
               <p className="text-xs md:text-sm text-muted-foreground font-main text-center">
-                Form submits directly to WhatsApp so your message reaches me instantly.
+                Email works on desktop without WhatsApp. WhatsApp remains available for instant chat.
               </p>
 
               {submitFeedback && (

@@ -13,124 +13,124 @@ export const videos: Video[] = [
   // Featured Videos (Latest)
   {
     id: "featured-1",
-    title: "Featured Edit 1",
+    title: "Cinematic Impact Reel",
     googleDriveLink: "https://drive.google.com/file/d/1JDg8xKFJ6N-Z2hIPwTf2MLnM1wgC9zhK/view",
     category: "Popular Edits",
     isLatest: true,
     isVertical: true,
-    description: "Featured creative edit"
+    description: "Punchy cinematic short with dramatic pacing"
   },
   {
     id: "featured-2",
-    title: "Featured Edit 2",
+    title: "High-Energy Social Cut",
     googleDriveLink: "https://drive.google.com/file/d/1CiRwgpYnsY2GTWzvaWwFtnZZKTtr_Y5R/view",
     category: "Popular Edits",
     isLatest: true,
     isVertical: true,
-    description: "Featured viral content"
+    description: "Fast-paced social edit crafted for retention"
   },
   {
     id: "featured-3",
-    title: "Featured Edit 3",
+    title: "Rhythm Sync Montage",
     googleDriveLink: "https://drive.google.com/file/d/1p0o_n_FSfIxvJa11iFXxqM--GljKSXC9/view",
     category: "Popular Edits",
     isLatest: true,
     isVertical: true,
-    description: "Featured dynamic edit"
+    description: "Beat-driven montage with layered transitions"
   },
   {
     id: "featured-4",
-    title: "Featured Edit 4",
+    title: "Story-Driven Promo Cut",
     googleDriveLink: "https://drive.google.com/file/d/1vDF7AsxlQk_lduK5pcoMix7s6gy61MHZ/view",
     category: "Popular Edits",
     isLatest: true,
     isVertical: true,
-    description: "Featured stylish content"
+    description: "Narrative promo with clean typography and flow"
   },
   {
     id: "featured-5",
-    title: "Featured Edit 5",
+    title: "Velocity Transition Reel",
     googleDriveLink: "https://drive.google.com/file/d/1M8gCLXYv8UWV0EaEsmnEYeZCB7DS8Wba/view",
     category: "Popular Edits",
     isLatest: true,
     isVertical: true,
-    description: "Featured trending edit"
+    description: "Smooth speed-ramped transitions for short-form platforms"
   },
   {
     id: "featured-6",
-    title: "Featured Edit 6",
+    title: "Premium Brand Highlight",
     googleDriveLink: "https://drive.google.com/file/d/1clSIymWsqMZjUlS-3Z0Vd-38kz9_3hc8/view",
     category: "Popular Edits",
     isLatest: true,
     isVertical: true,
-    description: "Featured creative piece"
+    description: "Polished brand-focused reel with cinematic finish"
   },
 
   // Anime Edits
   {
     id: "anime-1",
-    title: "Anime Edit 1",
+    title: "Neon Clash Sequence",
     googleDriveLink: "https://drive.google.com/file/d/1zNWeJMVvjSwwXJnCkEmhkjd9lStajSsU/preview",
     category: "Anime Edits",
     isLatest: false,
     isVertical: true,
-    description: "Creative anime edit with smooth transitions"
+    description: "Neon-toned anime sequence with precision transitions"
   },
   {
     id: "anime-2",
-    title: "Anime Edit 2",
+    title: "Blade Rush Cut",
     googleDriveLink: "https://drive.google.com/file/d/1RCTuGKvDZy4ssjWDl5B8DP2X4eEpYkLd/preview",
     category: "Anime Edits",
     isLatest: false,
     isVertical: true,
-    description: "Dynamic anime sequence with VFX"
+    description: "High-speed anime edit layered with impact VFX"
   },
   {
     id: "anime-3",
-    title: "Anime Edit 3",
+    title: "Cel-Shaded Motion Mix",
     googleDriveLink: "https://drive.google.com/file/d/16pBNw2_fZ3486JHJ_DKBKdwpBBGUGlBq/preview",
     category: "Anime Edits",
     isLatest: false,
     isVertical: true,
-    description: "Stylized anime edit with motion graphics"
+    description: "Stylized anime mix with graphic overlays and motion design"
   },
   {
     id: "anime-4",
-    title: "Anime Edit 4",
+    title: "Final Strike Montage",
     googleDriveLink: "https://drive.google.com/file/d/1Czd84z1fyhG1nvjbgFOJRkGaQD34GHuc/preview",
     category: "Anime Edits",
     isLatest: false,
     isVertical: true,
-    description: "Epic anime battle scene edit"
+    description: "Cinematic battle montage with dramatic rhythm"
   },
   {
     id: "anime-5",
-    title: "Anime Edit 5",
+    title: "Cinematic Anime Tribute",
     googleDriveLink: "https://drive.google.com/file/d/1nrWTq1mbYRixB-HOFHElRJg9EjX__r82/preview",
     category: "Anime Edits",
     isLatest: false,
     isVertical: true,
-    description: "Cinematic anime edit with effects"
+    description: "Atmospheric anime tribute edit with polished effects"
   },
 
   // Popular Edits
   {
     id: "popular-1",
-    title: "Popular Edit 1",
+    title: "Trend Pulse Reel",
     googleDriveLink: "https://drive.google.com/file/d/1jxU6oArmFJaVp8EIWXHClUUHUEYJ1-qC/preview",
     category: "Popular Edits",
     isLatest: false,
     isVertical: true,
-    description: "Trending style edit with viral appeal"
+    description: "Trend-forward short optimized for social engagement"
   },
   {
     id: "popular-2",
-    title: "Popular Edit 2",
+    title: "Impact Hook Edit",
     googleDriveLink: "https://drive.google.com/file/d/1g1idcrso4OhSD8Hqg2PuBha7fYKMgojR/preview",
     category: "Popular Edits",
     isLatest: false,
     isVertical: true,
-    description: "High-energy popular content edit"
+    description: "High-energy opening hook designed for retention"
   },
   {
     id: "popular-3",
@@ -143,39 +143,39 @@ export const videos: Video[] = [
   },
   {
     id: "popular-4",
-    title: "Popular Edit 4",
+    title: "Momentum Social Cut",
     googleDriveLink: "https://drive.google.com/file/d/1K9Qv00URH4kldH87jP4GL10YO6loOSjx/preview",
     category: "Popular Edits",
     isLatest: false,
     isVertical: true,
-    description: "Viral-worthy short form content"
+    description: "Momentum-driven short-form edit with clean pacing"
   },
   {
     id: "popular-5",
-    title: "Popular Edit 5",
+    title: "Audience Retention Reel",
     googleDriveLink: "https://drive.google.com/file/d/18cpAxEt3RZeI_htpeuhOqFHx0p0n3hU_/preview",
     category: "Popular Edits",
     isLatest: false,
     isVertical: true,
-    description: "Engaging social media edit"
+    description: "Engagement-focused social reel with dynamic cuts"
   },
   {
     id: "popular-6",
-    title: "Popular Edit 6",
+    title: "Stylized Viral Sequence",
     googleDriveLink: "https://drive.google.com/file/d/1XEltWOoJVLQAo_Wv6JSlKrGwP49bKfmV/preview",
     category: "Popular Edits",
     isLatest: false,
     isVertical: true,
-    description: "Creative popular content piece"
+    description: "Stylized sequence balancing speed and visual clarity"
   },
   {
     id: "popular-7",
-    title: "Popular Edit 7",
+    title: "Modern Hype Montage",
     googleDriveLink: "https://drive.google.com/file/d/11zbGlFKpbcbWZl-citdGfo_bhs1Z-tQD/preview",
     category: "Popular Edits",
     isLatest: false,
     isVertical: true,
-    description: "Modern style viral edit"
+    description: "Contemporary montage built for viral short-form distribution"
   },
 
   // Intros

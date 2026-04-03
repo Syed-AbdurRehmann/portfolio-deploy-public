@@ -439,12 +439,19 @@ const VideoRollSlider = ({ videos, onPlay }: VideoRollSliderProps) => {
               onTransitionEnd={onMobileTransitionEnd}
             >
               {mobileLoopedVideos.map((video, index) => {
+                const isClone = videos.length > 1 && (index === 0 || index === mobileLoopedVideos.length - 1);
                 const isCurrent = videos.length <= 1 ? index === 0 : index === mobileSlideIndex;
                 return (
-                  <div key={`${video.id}-mobile-${index}`} className="w-full shrink-0 flex justify-center px-2">
+                  <div
+                    key={`${video.id}-mobile-${index}`}
+                    className="w-full shrink-0 flex justify-center px-2"
+                    aria-hidden={isClone}
+                  >
                     <button
                       type="button"
                       className="group relative w-[88vw] max-w-[24rem] aspect-[9/16] rounded-[1.5rem] border border-white/15 bg-neutral-950/50 text-left overflow-hidden"
+                      tabIndex={isClone ? -1 : 0}
+                      aria-hidden={isClone}
                       style={{
                         transform: isCurrent ? "scale(1)" : "scale(0.96)",
                         opacity: isCurrent ? 1 : 0.7,
@@ -525,6 +532,7 @@ const VideoRollSlider = ({ videos, onPlay }: VideoRollSliderProps) => {
         aria-label="Featured videos carousel"
       >
         {loopedVideos.map((video, index) => {
+          const isClone = shouldLoop && (index < videos.length || index >= videos.length * 2);
           const rawDistance = index - activeIndex;
           const distance = clamp(rawDistance, -2, 2);
           const abs = Math.abs(distance);
@@ -556,6 +564,8 @@ const VideoRollSlider = ({ videos, onPlay }: VideoRollSliderProps) => {
               type="button"
               data-slider-card="true"
               className="group relative shrink-0 w-[86vw] sm:w-[64vw] md:w-[50vw] lg:w-[40vw] xl:w-[34vw] max-w-[31rem] min-w-[15rem] aspect-[9/16] rounded-[1.6rem] border border-white/15 bg-neutral-950/50 text-left overflow-visible"
+              tabIndex={isClone ? -1 : 0}
+              aria-hidden={isClone}
               style={{
                 zIndex: 40 - abs,
                 opacity,
@@ -575,7 +585,7 @@ const VideoRollSlider = ({ videos, onPlay }: VideoRollSliderProps) => {
 
                 onPlay(video);
               }}
-              aria-label={isActive ? `Play ${video.title}` : `Focus ${video.title}`}
+              aria-label={isClone ? undefined : isActive ? `Play ${video.title}` : `Focus ${video.title}`}
             >
               <div
                 className="relative h-full w-full rounded-[1.6rem] overflow-hidden"
