@@ -35,7 +35,13 @@ export default defineConfig(({ mode }) => ({
             ? `${packageSegments[0]}/${packageSegments[1]}`
             : packageSegments[0];
 
-          if (packageName === "react" || packageName === "react-dom" || packageName === "react-router-dom" || packageName === "scheduler") {
+          if (
+            packageName === "react" ||
+            packageName === "react-dom" ||
+            packageName === "react-router" ||
+            packageName === "react-router-dom" ||
+            packageName === "scheduler"
+          ) {
             return "vendor-react";
           }
 
