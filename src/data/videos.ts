@@ -417,11 +417,36 @@ export const videos: Video[] = [
 export const categories = ["All", "Anime Edits", "Popular Edits", "HeadCam Reels", "Logo Animation", "Intros", "Long Form", "Face Less"];
 
 // Utility functions
-export const getLatestVideos = () => videos.filter(video => video.isLatest);
-export const getVideosByCategory = (category: string) => 
-  category === "All" ? videos : videos.filter(video => video.category === category);
-export const getVideoThumbnail = (googleDriveLink: string) => {
-  // Extract file ID from Google Drive link and create thumbnail URL
-  const fileId = googleDriveLink.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
-  return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w400` : null;
+export const getLatestVideos = (source: Video[] = videos) => source.filter(video => video.isLatest);
+export const getVideosByCategory = (category: string, source: Video[] = videos) =>
+  category === "All" ? source : source.filter(video => video.category === category);
+
+export const getGoogleDriveFileId = (googleDriveLink: string) => {
+  const fromPath = googleDriveLink.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+  if (fromPath) {
+    return fromPath;
+  }
+
+  const fromQuery = googleDriveLink.match(/[?&]id=([a-zA-Z0-9-_]+)/)?.[1];
+  return fromQuery || null;
+};
+
+export const getVideoThumbnailCandidates = (googleDriveLink: string, width = 900) => {
+  const fileId = getGoogleDriveFileId(googleDriveLink);
+  if (!fileId) {
+    return [];
+  }
+
+  const safeWidth = Math.max(320, Math.min(width, 1600));
+
+  return [
+    `https://drive.google.com/thumbnail?id=${fileId}&sz=w${safeWidth}`,
+    `https://lh3.googleusercontent.com/d/${fileId}=w${safeWidth}`,
+    `https://drive.google.com/uc?export=view&id=${fileId}`,
+  ];
+};
+
+export const getVideoThumbnail = (googleDriveLink: string, width = 900) => {
+  const candidates = getVideoThumbnailCandidates(googleDriveLink, width);
+  return candidates[0] || null;
 };

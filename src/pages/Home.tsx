@@ -1,21 +1,62 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, ChevronDown, Phone, Play, Sparkles } from "lucide-react";
+import { ArrowRight, ChevronDown, Phone, Play } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import Video3DCard from "@/components/Video3DCard";
+import VideoRollSlider from "@/components/VideoRollSlider";
 import VideoPlayer from "@/components/VideoPlayer";
 import PearlButton from "@/components/PearlButton";
 import RotatingText from "@/components/RotatingText";
 import ClientsSection from "@/components/ClientsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactSection from "@/components/ContactSection";
-import { getLatestVideos, Video } from "@/data/videos";
+import { type Video } from "@/data/videos";
+import { useVideos } from "@/hooks/useVideos";
 
 const Home = () => {
+  const homeRef = useRef<HTMLDivElement>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
-  const latestVideos = getLatestVideos();
+  const { videos, isLoading: videosLoading } = useVideos();
+  const latestVideos = videos.filter((video) => video.isLatest);
+
+  useEffect(() => {
+    if (!homeRef.current) {
+      return;
+    }
+
+    const targets = Array.from(homeRef.current.querySelectorAll<HTMLElement>("[data-home-reveal]"));
+
+    if (!("IntersectionObserver" in window)) {
+      targets.forEach((target) => target.classList.add("is-visible"));
+      return;
+    }
+
+    targets.forEach((target, index) => {
+      target.style.setProperty("--home-reveal-delay", `${Math.min(index * 70, 280)}ms`);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.12,
+        rootMargin: "0px 0px -8% 0px",
+      },
+    );
+
+    targets.forEach((target) => observer.observe(target));
+
+    return () => observer.disconnect();
+  }, []);
 
   const handlePlayVideo = (video: Video) => {
     setSelectedVideo(video);
@@ -87,9 +128,9 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen relative z-10 overflow-x-hidden">
+    <div ref={homeRef} className="min-h-screen relative z-10 overflow-x-hidden">
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-4 relative pt-20 overflow-hidden">
+      <section className="min-h-screen flex flex-col items-center justify-center px-4 relative pt-20">
         <div className="text-center max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -103,7 +144,6 @@ const Home = () => {
               transition={{ delay: 0.2 }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
             >
-              <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-main text-primary">Available for new projects</span>
             </motion.div>
 
@@ -112,14 +152,7 @@ const Home = () => {
               <span className="text-foreground">I Create</span>
               <br />
               <span className="relative inline-block">
-                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                  Stunning
-                </span>
-                <motion.div
-                  className="absolute -inset-1 bg-primary/20 rounded-lg blur-2xl -z-10"
-                  animate={{ opacity: [0.5, 0.8, 0.5] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
+                <span className="text-primary">Stunning</span>
               </span>
               {" "}
               <span className="text-foreground">Videos</span>
@@ -192,7 +225,7 @@ const Home = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 px-4 border-y border-primary/10 bg-card/20 backdrop-blur-sm">
+      <section data-home-reveal className="home-reveal py-16 px-4 border-y border-primary/10">
         <div className="container mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -217,7 +250,7 @@ const Home = () => {
       </section>
 
       {/* Latest Work */}
-      <section id="work" className="py-20 px-4">
+      <section id="work" data-home-reveal className="home-reveal py-20 px-4">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -226,26 +259,26 @@ const Home = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
-              Featured <span className="text-primary">Work</span>
+              3D Featured <span className="text-primary">Showcase</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto font-main">
-              Discover my most recent video editing projects featuring advanced techniques and creative storytelling
+              Roll through large video cards with a cinematic depth effect and tap any center card to play instantly.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6 mb-12">
-            {latestVideos.slice(0, 6).map((video, index) => (
-              <motion.div
-                key={video.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Video3DCard video={video} onPlay={handlePlayVideo} />
-              </motion.div>
-            ))}
-          </div>
+          {videosLoading ? (
+            <div className="text-center text-muted-foreground font-main mb-12">Loading featured videos...</div>
+          ) : (
+            <div className="mb-12">
+              <VideoRollSlider videos={latestVideos.slice(0, 8)} onPlay={handlePlayVideo} />
+            </div>
+          )}
+
+          {!videosLoading && latestVideos.length === 0 && (
+            <div className="text-center text-muted-foreground font-main mb-12">
+              No featured videos available yet.
+            </div>
+          )}
 
           <div className="text-center">
             <Link to="/portfolio">
@@ -263,12 +296,12 @@ const Home = () => {
       </section>
 
       {/* Clients */}
-      <section id="clients">
+      <section id="clients" data-home-reveal className="home-reveal">
         <ClientsSection />
       </section>
 
       {/* About / Skills */}
-      <section id="about" className="py-20 px-4 bg-card/30 backdrop-blur-sm">
+      <section id="about" data-home-reveal className="home-reveal py-20 px-4">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -337,7 +370,7 @@ const Home = () => {
       </section>
 
       {/* Creative Process */}
-      <section className="py-20 px-4">
+      <section data-home-reveal className="home-reveal py-20 px-4">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -374,10 +407,12 @@ const Home = () => {
       </section>
 
       {/* Testimonials */}
-      <TestimonialsSection />
+      <div data-home-reveal className="home-reveal">
+        <TestimonialsSection />
+      </div>
 
       {/* FAQ */}
-      <section id="faq" className="py-20 px-4">
+      <section id="faq" data-home-reveal className="home-reveal py-20 px-4">
         <div className="container mx-auto max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -420,7 +455,9 @@ const Home = () => {
       </section>
 
       {/* Contact */}
-      <ContactSection />
+      <div data-home-reveal className="home-reveal">
+        <ContactSection />
+      </div>
 
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-border/50">

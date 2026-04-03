@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { X, ExternalLink } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Video } from "@/data/videos";
+import { Video, getGoogleDriveFileId } from "@/data/videos";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
 
@@ -45,12 +45,14 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
 
   useEffect(() => {
     if (video?.googleDriveLink) {
-      // Convert Google Drive link to embed format
-      const fileId = video.googleDriveLink.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      const fileId = getGoogleDriveFileId(video.googleDriveLink);
       if (fileId) {
-        setEmbedUrl(`https://drive.google.com/file/d/${fileId}/preview`);
+        setEmbedUrl(`https://drive.google.com/file/d/${fileId}/preview?autoplay=1`);
       }
+      return;
     }
+
+    setEmbedUrl("");
   }, [video]);
 
   const handleOpenInDrive = () => {
@@ -80,15 +82,18 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
             </motion.button>
 
             {/* Video Player - Full screen for mobile */}
-            <div className={`flex-1 flex items-center justify-center bg-black ${video.isVertical ? '' : 'px-0'}`}>
+            <div className="flex-1 flex items-center justify-center bg-black px-3">
               {embedUrl ? (
-                <iframe
-                  src={embedUrl}
-                  className={`${video.isVertical ? 'w-full h-full' : 'w-full aspect-video'}`}
-                  allowFullScreen
-                  allow="autoplay"
-                  title={video.title}
-                />
+                <div className={`${video.isVertical ? 'w-full max-w-[90vw] aspect-[9/16]' : 'w-full max-w-[98vw] aspect-video'}`}>
+                  <iframe
+                    src={embedUrl}
+                    className="w-full h-full"
+                    loading="eager"
+                    allowFullScreen
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    title={video.title}
+                  />
+                </div>
               ) : (
                 <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
                   <div className="text-center p-6">
@@ -116,34 +121,36 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
   // Desktop layout
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl w-[95vw] h-[90vh] p-0 bg-black border-primary/20">
-        <div className="relative flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 bg-card/95 backdrop-blur-sm border-b border-border">
+      <DialogContent className="max-w-[96vw] w-[96vw] h-[94vh] p-0 bg-black border-primary/20 overflow-hidden">
+        <div className="relative h-full w-full bg-black">
+          <div className="absolute top-0 inset-x-0 z-20 p-4 md:p-5 flex items-start justify-between bg-gradient-to-b from-black/80 via-black/45 to-transparent">
             <div>
-              <h2 className="text-xl font-semibold text-foreground">{video.title}</h2>
-              <p className="text-sm text-muted-foreground">{video.category}</p>
+              <h2 className="text-lg md:text-xl font-semibold text-white">{video.title}</h2>
+              <p className="text-xs md:text-sm text-white/70">{video.category}</p>
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={handleOpenInDrive}
-              className="text-xs"
+              className="text-xs bg-black/45 border-white/25 text-white hover:bg-black/65"
             >
               <ExternalLink className="w-4 h-4 mr-1" />
               Open in Drive
             </Button>
           </div>
 
-          {/* Video Player */}
-          <div className="flex-1 flex items-center justify-center bg-black min-h-0">
+          <div className="h-full w-full flex items-center justify-center p-3 md:p-5">
             {embedUrl ? (
-              <iframe
-                src={embedUrl}
-                className="w-full h-full"
-                allowFullScreen
-                title={video.title}
-              />
+              <div className={`${video.isVertical ? 'h-full max-h-[88vh] aspect-[9/16] w-auto' : 'w-full max-w-[90vw] md:max-w-[82vw] aspect-video'} rounded-lg overflow-hidden`}>
+                <iframe
+                  src={embedUrl}
+                  className="w-full h-full"
+                  loading="eager"
+                  allowFullScreen
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  title={video.title}
+                />
+              </div>
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">
                 <div className="text-center">
@@ -157,11 +164,9 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
             )}
           </div>
 
-          {/* Video Info */}
           {video.description && (
-            <div className="p-4 bg-card/95 backdrop-blur-sm border-t border-border">
-              <h3 className="font-medium text-foreground mb-2">Description</h3>
-              <p className="text-muted-foreground">{video.description}</p>
+            <div className="absolute inset-x-0 bottom-0 z-20 p-4 md:p-5 bg-gradient-to-t from-black/82 via-black/40 to-transparent">
+              <p className="text-white/85 text-sm md:text-base max-w-4xl mx-auto">{video.description}</p>
             </div>
           )}
         </div>

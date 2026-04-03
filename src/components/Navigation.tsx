@@ -21,6 +21,7 @@ const Navigation = () => {
     { name: "About", path: "/#about" },
     { name: "Clients", path: "/#clients" },
     { name: "Contact", path: "/#contact" },
+    { name: "CV", path: "/cv" },
   ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
@@ -68,24 +69,36 @@ const Navigation = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <a
-                key={item.path}
-                href={item.path}
-                onClick={(e) => handleNavClick(e, item.path)}
-                className="relative text-sm font-main font-medium text-foreground/80 hover:text-primary transition-colors group"
-              >
-                {item.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
-              </a>
+              item.path.startsWith('/#') ? (
+                <a
+                  key={item.path}
+                  href={item.path}
+                  onClick={(e) => handleNavClick(e, item.path)}
+                  className="relative text-sm font-main font-medium text-foreground/80 hover:text-primary transition-colors group"
+                >
+                  {item.name}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
+                </a>
+              ) : (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="relative text-sm font-main font-medium text-foreground/80 hover:text-primary transition-colors group"
+                >
+                  {item.name}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
+                </Link>
+              )
             ))}
             <Link to="/portfolio">
-              <motion.button
+              <motion.span
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-5 py-2.5 rounded-full bg-primary/10 border border-primary/30 text-primary font-main font-medium text-sm hover:bg-primary/20 transition-all"
+                className="inline-flex px-5 py-2.5 rounded-full bg-primary/10 border border-primary/30 text-primary font-main font-medium text-sm hover:bg-primary/20 transition-all"
               >
                 View Portfolio
-              </motion.button>
+              </motion.span>
             </Link>
           </div>
 
@@ -94,6 +107,9 @@ const Navigation = () => {
             whileTap={{ scale: 0.9 }}
             className="md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-card/50 border border-border"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-navigation-panel"
           >
             {isMobileMenuOpen ? (
               <X className="w-5 h-5 text-foreground" />
@@ -111,6 +127,7 @@ const Navigation = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               className="md:hidden overflow-hidden"
+              id="mobile-navigation-panel"
             >
               <div className="py-4 space-y-4 border-t border-border/50">
                 {navItems.map((item, index) => (
@@ -120,13 +137,23 @@ const Navigation = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <a
-                      href={item.path}
-                      onClick={(e) => handleNavClick(e, item.path)}
-                      className="block text-lg font-main font-medium text-foreground/80 hover:text-primary transition-colors py-2"
-                    >
-                      {item.name}
-                    </a>
+                    {item.path.startsWith('/#') ? (
+                      <a
+                        href={item.path}
+                        onClick={(e) => handleNavClick(e, item.path)}
+                        className="block text-lg font-main font-medium text-foreground/80 hover:text-primary transition-colors py-2"
+                      >
+                        {item.name}
+                      </a>
+                    ) : (
+                      <Link
+                        to={item.path}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="block text-lg font-main font-medium text-foreground/80 hover:text-primary transition-colors py-2"
+                      >
+                        {item.name}
+                      </Link>
+                    )}
                   </motion.div>
                 ))}
                 <motion.div
@@ -134,10 +161,12 @@ const Navigation = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: navItems.length * 0.1 }}
                 >
-                  <Link to="/portfolio" onClick={() => setIsMobileMenuOpen(false)}>
-                    <button className="w-full px-5 py-3 rounded-full bg-primary text-primary-foreground font-main font-medium text-sm">
-                      View Portfolio
-                    </button>
+                  <Link
+                    to="/portfolio"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full inline-flex justify-center px-5 py-3 rounded-full bg-primary text-primary-foreground font-main font-medium text-sm"
+                  >
+                    View Portfolio
                   </Link>
                 </motion.div>
               </div>

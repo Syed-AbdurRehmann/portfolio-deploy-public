@@ -2,14 +2,16 @@ import { useState } from "react";
 import VideoCard from "@/components/VideoCard";
 import VideoPlayer from "@/components/VideoPlayer";
 import { Button } from "@/components/ui/button";
-import { categories, getVideosByCategory, Video } from "@/data/videos";
+import { getVideosByCategory, Video } from "@/data/videos";
+import { useVideos } from "@/hooks/useVideos";
 
 const Gallery = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
+  const { videos, categories, isLoading, error } = useVideos();
   
-  const filteredVideos = getVideosByCategory(selectedCategory);
+  const filteredVideos = getVideosByCategory(selectedCategory, videos);
 
   const handlePlayVideo = (video: Video) => {
     setSelectedVideo(video);
@@ -48,7 +50,15 @@ const Gallery = () => {
         </div>
 
         {/* Video Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {isLoading && <p className="text-center text-muted-foreground py-8">Loading videos...</p>}
+
+        {error && (
+          <p className="text-center text-destructive py-8">
+            {error instanceof Error ? error.message : "Unable to load videos right now."}
+          </p>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-10">
           {filteredVideos.map((video) => (
             <div key={video.id} className="animate-fade-in">
               <VideoCard

@@ -3,6 +3,14 @@ import { motion } from 'framer-motion';
 import { Send, Mail, MapPin, MessageCircle } from 'lucide-react';
 import PearlButton from './PearlButton';
 
+const PROJECT_TYPE_LABELS: Record<string, string> = {
+  'short-form': 'Short Form Content (Reels/TikTok)',
+  'long-form': 'Long Form Video',
+  'logo-animation': 'Logo Animation',
+  corporate: 'Corporate/Brand Video',
+  other: 'Other',
+};
+
 const ContactSection: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -10,11 +18,36 @@ const ContactSection: React.FC = () => {
     project: '',
     message: '',
   });
+  const [submitFeedback, setSubmitFeedback] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const whatsappMessage = `Hi! I'm ${formData.name}. ${formData.message}`;
-    window.open(`https://wa.me/923324112404?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+    const projectLabel = PROJECT_TYPE_LABELS[formData.project] || 'Not specified';
+    const whatsappMessage = [
+      'Hi Syed, I want to discuss a project.',
+      '',
+      `Name: ${formData.name.trim()}`,
+      `Email: ${formData.email.trim()}`,
+      `Project Type: ${projectLabel}`,
+      '',
+      'Message:',
+      formData.message.trim(),
+    ].join('\n');
+
+    const whatsappUrl = `https://wa.me/923324112404?text=${encodeURIComponent(whatsappMessage)}`;
+    const popup = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+
+    if (!popup) {
+      window.location.href = whatsappUrl;
+    }
+
+    setSubmitFeedback('Opening WhatsApp with your message...');
+    setFormData({
+      name: '',
+      email: '',
+      project: '',
+      message: '',
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -26,9 +59,6 @@ const ContactSection: React.FC = () => {
 
   return (
     <section id="contact" className="py-12 md:py-20 px-3 md:px-4 relative overflow-x-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
-      
       <div className="container mx-auto max-w-6xl relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -127,8 +157,9 @@ const ContactSection: React.FC = () => {
           >
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6 p-4 md:p-8 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2 font-main">Name</label>
+                <label htmlFor="contact-name" className="block text-sm font-medium text-foreground mb-2 font-main">Name</label>
                 <input
+                  id="contact-name"
                   type="text"
                   name="name"
                   value={formData.name}
@@ -140,8 +171,9 @@ const ContactSection: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2 font-main">Email</label>
+                <label htmlFor="contact-email" className="block text-sm font-medium text-foreground mb-2 font-main">Email</label>
                 <input
+                  id="contact-email"
                   type="email"
                   name="email"
                   value={formData.email}
@@ -153,8 +185,9 @@ const ContactSection: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2 font-main">Project Type</label>
+                <label htmlFor="contact-project" className="block text-sm font-medium text-foreground mb-2 font-main">Project Type</label>
                 <select
+                  id="contact-project"
                   name="project"
                   value={formData.project}
                   onChange={handleChange}
@@ -171,8 +204,9 @@ const ContactSection: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2 font-main">Message</label>
+                <label htmlFor="contact-message" className="block text-sm font-medium text-foreground mb-2 font-main">Message</label>
                 <textarea
+                  id="contact-message"
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
@@ -190,6 +224,16 @@ const ContactSection: React.FC = () => {
                 Send Message
                 <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
+
+              <p className="text-xs md:text-sm text-muted-foreground font-main text-center">
+                Form submits directly to WhatsApp so your message reaches me instantly.
+              </p>
+
+              {submitFeedback && (
+                <p className="text-xs md:text-sm text-primary font-main text-center" role="status">
+                  {submitFeedback}
+                </p>
+              )}
             </form>
           </motion.div>
         </div>

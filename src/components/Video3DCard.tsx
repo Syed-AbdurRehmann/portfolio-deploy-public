@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play } from 'lucide-react';
 import Interactive3DCard from './Interactive3DCard';
-import { Video, getVideoThumbnail } from '@/data/videos';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { Video } from '@/data/videos';
+import { usePerformanceMode } from '@/hooks/usePerformanceMode';
+import VideoThumbnailImage from './VideoThumbnailImage';
 
 interface Video3DCardProps {
   video: Video;
@@ -12,9 +13,7 @@ interface Video3DCardProps {
 
 const Video3DCard: React.FC<Video3DCardProps> = ({ video, onPlay }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [thumbnailError, setThumbnailError] = useState(false);
-  const thumbnail = getVideoThumbnail(video.googleDriveLink);
-  const isMobile = useIsMobile();
+  const { isMobile, shouldReduceEffects } = usePerformanceMode();
 
   const handleClick = () => {
     // Always use the modal player - works for both mobile and desktop
@@ -29,30 +28,30 @@ const Video3DCard: React.FC<Video3DCardProps> = ({ video, onPlay }) => {
     >
       <div
         className="relative overflow-hidden"
+        style={{ contentVisibility: 'auto', containIntrinsicSize: video.isVertical ? '560px' : '360px' }}
         onMouseEnter={() => !isMobile && setIsHovered(true)}
         onMouseLeave={() => !isMobile && setIsHovered(false)}
       >
         {/* Thumbnail */}
-        <div className={`relative ${video.isVertical ? 'aspect-[9/16]' : 'aspect-video'} bg-neutral-900`}>
-          {thumbnail && !thumbnailError ? (
-            <img
-              src={thumbnail}
-              alt={video.title}
-              className="w-full h-full object-cover"
-              onError={() => setThumbnailError(true)}
-              loading="lazy"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-800 to-neutral-900">
-              <Play className="w-12 h-12 text-primary/50" />
-            </div>
-          )}
+        <div className="relative aspect-[9/16] bg-neutral-900">
+          <VideoThumbnailImage
+            googleDriveLink={video.googleDriveLink}
+            width={shouldReduceEffects ? 720 : 1080}
+            alt={video.title}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            fallback={(
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-800 to-neutral-900">
+                <Play className="w-12 h-12 text-primary/50" />
+              </div>
+            )}
+          />
 
           {/* Overlay gradient */}
           <motion.div
             className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
             initial={{ opacity: 0.6 }}
-            animate={{ opacity: isHovered ? 0.4 : 0.6 }}
+            animate={{ opacity: shouldReduceEffects ? 0.55 : isHovered ? 0.4 : 0.6 }}
           />
 
           {/* Play button - always visible on mobile, hover on desktop */}
@@ -60,10 +59,10 @@ const Video3DCard: React.FC<Video3DCardProps> = ({ video, onPlay }) => {
             className="absolute inset-0 flex items-center justify-center"
             initial={{ opacity: isMobile ? 0.9 : 0, scale: isMobile ? 1 : 0.8 }}
             animate={{ 
-              opacity: isMobile ? 0.9 : (isHovered ? 1 : 0), 
-              scale: isMobile ? 1 : (isHovered ? 1 : 0.8) 
+              opacity: isMobile ? 0.9 : (shouldReduceEffects ? 1 : (isHovered ? 1 : 0)), 
+              scale: isMobile ? 1 : (shouldReduceEffects ? 1 : (isHovered ? 1 : 0.8)) 
             }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: shouldReduceEffects ? 0 : 0.2 }}
           >
             <div 
               className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} rounded-full flex items-center justify-center backdrop-blur-sm`}
@@ -100,10 +99,10 @@ const Video3DCard: React.FC<Video3DCardProps> = ({ video, onPlay }) => {
                   border: '1px solid rgba(220, 60, 60, 0.5)',
                   color: 'rgb(220, 60, 60)',
                 }}
-                animate={{ 
+                animate={shouldReduceEffects ? undefined : {
                   boxShadow: ['0 0 10px rgba(220, 60, 60, 0.3)', '0 0 20px rgba(220, 60, 60, 0.5)', '0 0 10px rgba(220, 60, 60, 0.3)']
                 }}
-                transition={{ duration: 2, repeat: Infinity }}
+                transition={shouldReduceEffects ? undefined : { duration: 2, repeat: Infinity }}
               >
                 NEW
               </motion.span>

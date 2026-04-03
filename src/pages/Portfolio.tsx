@@ -2,14 +2,16 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Video3DCard from "@/components/Video3DCard";
 import VideoPlayer from "@/components/VideoPlayer";
-import { categories, getVideosByCategory, Video } from "@/data/videos";
+import { getVideosByCategory, Video } from "@/data/videos";
+import { useVideos } from "@/hooks/useVideos";
 
 const Portfolio = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
+  const { videos, categories, isLoading, error } = useVideos();
 
-  const filteredVideos = getVideosByCategory(selectedCategory);
+  const filteredVideos = getVideosByCategory(selectedCategory, videos);
 
   const handlePlayVideo = (video: Video) => {
     setSelectedVideo(video);
@@ -70,9 +72,19 @@ const Portfolio = () => {
 
         {/* Video Grid */}
         <div id="video-grid" className="scroll-mt-32">
+          {isLoading && (
+            <div className="text-center py-16 text-muted-foreground font-main">Loading videos...</div>
+          )}
+
+          {error && (
+            <div className="text-center py-6 text-destructive font-main">
+              {error instanceof Error ? error.message : "Unable to load videos right now."}
+            </div>
+          )}
+
           <motion.div
             layout
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8"
           >
             {filteredVideos.map((video, index) => (
               <motion.div

@@ -5,30 +5,30 @@ import { ChevronLeft, ChevronRight, Quote, Star } from 'lucide-react';
 const testimonials = [
   {
     id: 1,
-    name: 'Alex Chen',
-    role: 'YouTube Creator (2M+ Subs)',
-    content: "Working with Syed transformed my channel completely. His editing style is unique, engaging, and perfectly captures my vision. My audience engagement increased by 40%!",
+    name: 'Underdawg Studio',
+    role: 'CONTENT AGENCY',
+    content: "Best video editor we've worked with. Understands the brief, delivers on time, and the quality is always top-notch. Our engagement doubled after the edit.",
     rating: 5,
   },
   {
     id: 2,
-    name: 'Sarah Mitchell',
-    role: 'Brand Manager, TechCorp',
-    content: "Exceptional attention to detail and fast turnaround. Syed delivered our product launch video ahead of schedule and it exceeded all our expectations. Highly recommend!",
+    name: 'Hassan Saqib',
+    role: 'AGENCY MANAGER',
+    content: "Incredible motion graphics work. Syed brought our brand vision to life with stunning animations that perfectly captured our identity.",
     rating: 5,
   },
   {
     id: 3,
-    name: 'Marcus Johnson',
-    role: 'TikTok Influencer (500K+ Followers)',
-    content: "The 3D effects and transitions Syed creates are next level. He understands social media trends and knows exactly what makes content go viral.",
+    name: 'Digimad',
+    role: 'STARTUP FOUNDER',
+    content: "Fast, professional, and creative. Syed delivered exactly what we needed for our product launch video. The edits were seamless and engaging.",
     rating: 5,
   },
   {
     id: 4,
-    name: 'Emily Rodriguez',
-    role: 'E-commerce Entrepreneur',
-    content: "Our product videos never looked better. Syed's creative approach to showcasing products has directly contributed to a 60% increase in conversions.",
+    name: 'Donebyverde',
+    role: 'SOCIAL MEDIA MANAGER',
+    content: "Working with Syed was a game-changer. Our clients' social media presence improved dramatically with the viral-worthy edits Syed created for us.",
     rating: 5,
   },
 ];
@@ -45,11 +45,7 @@ const TestimonialsSection: React.FC = () => {
   };
 
   return (
-    <section id="testimonials" className="py-20 px-4 bg-card/30 backdrop-blur-sm relative">
-      {/* Decorative orbs */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
-
+    <section id="testimonials" className="py-20 px-4 relative">
       <div className="container mx-auto max-w-4xl relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -113,6 +109,7 @@ const TestimonialsSection: React.FC = () => {
               whileTap={{ scale: 0.9 }}
               onClick={prev}
               className="w-12 h-12 rounded-full bg-card border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/10 transition-colors"
+              aria-label="Show previous testimonial"
             >
               <ChevronLeft className="w-5 h-5" />
             </motion.button>
@@ -123,13 +120,23 @@ const TestimonialsSection: React.FC = () => {
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentIndex 
-                      ? 'bg-primary w-6' 
-                      : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
-                  }`}
-                />
+                  className="w-10 h-10 rounded-full inline-flex items-center justify-center"
+                  aria-label={`Show testimonial ${index + 1}`}
+                  aria-current={index === currentIndex ? "true" : undefined}
+                >
+                  <span
+                    className={`h-2 rounded-full transition-all ${
+                      index === currentIndex
+                        ? 'bg-primary w-6'
+                        : 'bg-muted-foreground/40 hover:bg-muted-foreground/60 w-2'
+                    }`}
+                  />
+                </button>
               ))}
+            </div>
+
+            <div className="sr-only" aria-live="polite">
+              Showing testimonial {currentIndex + 1} of {testimonials.length}
             </div>
 
             <motion.button
@@ -137,6 +144,7 @@ const TestimonialsSection: React.FC = () => {
               whileTap={{ scale: 0.9 }}
               onClick={next}
               className="w-12 h-12 rounded-full bg-card border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/10 transition-colors"
+              aria-label="Show next testimonial"
             >
               <ChevronRight className="w-5 h-5" />
             </motion.button>

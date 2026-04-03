@@ -1,29 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { usePerformanceMode } from '@/hooks/usePerformanceMode';
 
 const CustomCursor = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
-  const isMobile = useIsMobile();
+  const hoveringRef = useRef(false);
+  const { isMobile, isLowPerformance } = usePerformanceMode();
   
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
   
-  const springConfig = { damping: 25, stiffness: 300 };
+  const springConfig = { damping: 14, stiffness: 900, mass: 0.2 };
   const cursorXSpring = useSpring(cursorX, springConfig);
   const cursorYSpring = useSpring(cursorY, springConfig);
 
   useEffect(() => {
     // Don't show custom cursor on mobile/touch devices
-    if (isMobile || (typeof window !== 'undefined' && 'ontouchstart' in window)) {
+    if (isMobile || isLowPerformance || (typeof window !== 'undefined' && 'ontouchstart' in window)) {
       document.body.style.cursor = 'auto';
       return;
     }
 
     document.body.style.cursor = 'none';
     
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: PointerEvent) => {
       setIsVisible(true);
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
@@ -35,25 +36,29 @@ const CustomCursor = () => {
     const handleElementHover = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const isHoverable = target.closest('a, button, [role="button"], .cursor-pointer, .interactive-card');
-      setIsHovering(!!isHoverable);
+      const hoveringNow = !!isHoverable;
+      if (hoveringRef.current !== hoveringNow) {
+        hoveringRef.current = hoveringNow;
+        setIsHovering(hoveringNow);
+      }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('pointermove', handleMouseMove, { passive: true });
     window.addEventListener('mouseover', handleElementHover);
     document.addEventListener('mouseenter', handleMouseEnter);
     document.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
       document.body.style.cursor = 'auto';
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('pointermove', handleMouseMove);
       window.removeEventListener('mouseover', handleElementHover);
       document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [cursorX, cursorY, isMobile]);
+  }, [cursorX, cursorY, isMobile, isLowPerformance]);
 
   // Don't render on mobile/touch devices
-  if (isMobile || (typeof window !== 'undefined' && 'ontouchstart' in window)) {
+  if (isMobile || isLowPerformance || (typeof window !== 'undefined' && 'ontouchstart' in window)) {
     return null;
   }
 
@@ -65,12 +70,13 @@ const CustomCursor = () => {
         y: cursorYSpring,
         translateX: '-50%',
         translateY: '-50%',
+        willChange: 'transform',
       }}
       animate={{
         opacity: isVisible ? 1 : 0,
         scale: isHovering ? 1.5 : 1,
       }}
-      transition={{ duration: 0.15 }}
+      transition={{ duration: 0.08 }}
     >
       {/* Outer ring */}
       <div 
