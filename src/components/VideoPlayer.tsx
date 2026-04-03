@@ -14,6 +14,8 @@ interface VideoPlayerProps {
 
 const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
   const [embedUrl, setEmbedUrl] = useState<string>("");
+  const [isIframeLoading, setIsIframeLoading] = useState(false);
+  const [showDriveFallback, setShowDriveFallback] = useState(false);
   const isMobile = useIsMobile();
 
   // Prevent body scroll when modal is open
@@ -53,6 +55,31 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
     setEmbedUrl("");
   }, [video]);
 
+  useEffect(() => {
+    if (!isOpen || !embedUrl) {
+      setIsIframeLoading(false);
+      setShowDriveFallback(false);
+      return;
+    }
+
+    setIsIframeLoading(true);
+    setShowDriveFallback(false);
+  }, [embedUrl, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || !embedUrl || !isIframeLoading) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setShowDriveFallback(true);
+    }, 8000);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [embedUrl, isIframeLoading, isOpen]);
+
   const handleOpenInDrive = () => {
     if (video?.googleDriveLink) {
       window.open(video.googleDriveLink, '_blank');
@@ -82,7 +109,7 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
             {/* Video Player - Full screen for mobile */}
             <div className="flex-1 flex items-center justify-center bg-black px-3">
               {embedUrl ? (
-                <div className={`${video.isVertical ? 'w-full max-w-[90vw] aspect-[9/16]' : 'w-full max-w-[98vw] aspect-video'}`}>
+                <div className={`relative ${video.isVertical ? 'w-full max-w-[90vw] aspect-[9/16]' : 'w-full max-w-[98vw] aspect-video'}`}>
                   <iframe
                     src={embedUrl}
                     className="w-full h-full"
@@ -90,7 +117,20 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
                     allowFullScreen
                     allow="autoplay; fullscreen; picture-in-picture"
                     title={video.title}
+                    onLoad={() => setIsIframeLoading(false)}
                   />
+                  {isIframeLoading && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/80 text-white">
+                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      <p className="text-sm text-white/90">Loading video preview...</p>
+                      {showDriveFallback && (
+                        <Button onClick={handleOpenInDrive} variant="outline" size="sm" className="text-white border-white/40 hover:bg-white/10">
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Open in Google Drive
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="w-full h-full bg-neutral-900 flex items-center justify-center">
@@ -139,7 +179,7 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
 
           <div className="h-full w-full flex items-center justify-center p-3 md:p-5">
             {embedUrl ? (
-              <div className={`${video.isVertical ? 'h-full max-h-[88vh] aspect-[9/16] w-auto' : 'w-full max-w-[90vw] md:max-w-[82vw] aspect-video'} rounded-lg overflow-hidden`}>
+              <div className={`relative ${video.isVertical ? 'h-full max-h-[88vh] aspect-[9/16] w-auto' : 'w-full max-w-[90vw] md:max-w-[82vw] aspect-video'} rounded-lg overflow-hidden`}>
                 <iframe
                   src={embedUrl}
                   className="w-full h-full"
@@ -147,7 +187,20 @@ const VideoPlayer = ({ video, isOpen, onClose }: VideoPlayerProps) => {
                   allowFullScreen
                   allow="autoplay; fullscreen; picture-in-picture"
                   title={video.title}
+                  onLoad={() => setIsIframeLoading(false)}
                 />
+                {isIframeLoading && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/80 text-white">
+                    <div className="h-10 w-10 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    <p className="text-sm md:text-base text-white/90">Loading video preview...</p>
+                    {showDriveFallback && (
+                      <Button onClick={handleOpenInDrive} variant="outline" className="text-white border-white/40 hover:bg-white/10">
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Open in Google Drive
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="w-full h-full bg-muted flex items-center justify-center">
