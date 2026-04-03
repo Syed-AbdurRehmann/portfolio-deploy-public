@@ -11,6 +11,11 @@ node_modules
 dist
 dist-ssr
 *.local
+.env.server
+server/data/
+secrets.local.json
+.coolify_api_token.local
+.deployment_runtime.local
 
 # Editor directories and files
 .vscode/*

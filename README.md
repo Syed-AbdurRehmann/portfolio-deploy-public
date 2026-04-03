@@ -1,5 +1,73 @@
 # Welcome to your Lovable project
 
+## New Features Added
+
+- Admin mode at `/admin` for video add/edit/delete
+- Self-hosted API + SQLite-backed video source with fallback to local static data
+- CV page at `/cv` with PDF download support
+- Uploadable resume file support via `public/resume.pdf`
+
+## Admin Setup (Self-Hosted SQLite)
+
+1. Copy `.env.server.example` to `.env.server`
+2. Fill server values:
+
+```bash
+PORT=3001
+JWT_SECRET=your-strong-secret
+JWT_EXPIRES_IN=12h
+CORS_ORIGIN=http://localhost:8080
+# ADMIN_SETUP_KEY is optional
+```
+
+3. Start app with `npm run dev` (runs API + web)
+4. Open `/admin`, create first admin account, then sign in
+5. See `SQLITE_SETUP.md` for details and production notes
+
+Without API availability, public pages still use fallback static videos.
+
+## Private Server Deployment (Coolify + Cloudflare)
+
+Implementation scripts are now available in `scripts/`:
+
+- `scripts/deploy.ps1` - orchestrates git push, DNS upsert, Coolify deploy trigger, and health checks
+- `scripts/add-subdomain.ps1` - idempotent Cloudflare CNAME create/update for `*.aniweb.online`
+- `scripts/add-subdomain.sh` - bash version of DNS helper
+
+### 1. Create local deploy config
+
+```powershell
+Copy-Item .\secrets.local.example.json .\secrets.local.json
+```
+
+Fill `secrets.local.json` with your real tokens and IDs. This file is ignored by git.
+
+### 2. Run deployment (checkpoint mode)
+
+```powershell
+.\scripts\deploy.ps1 -AppName portfolio -Subdomain portfolio -Branch main
+```
+
+This project now deploys with `dockerfile` build pack by default (uses root `Dockerfile`).
+
+### 3. Run deployment non-interactively
+
+```powershell
+.\scripts\deploy.ps1 -AppName portfolio -Subdomain portfolio -Branch main -AutoApprove
+```
+
+### Useful flags
+
+- `-SkipPush` to skip git push
+- `-SkipDns` to skip Cloudflare DNS writes
+- `-SkipCoolify` to run only source + DNS steps
+
+After first successful production startup, run one-time seed if needed:
+
+```powershell
+npm run seed:videos
+```
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/bb03c644-f49c-4d57-9c7d-aa577ea819df
