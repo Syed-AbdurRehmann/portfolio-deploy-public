@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import vm from "node:vm";
 import Database from "better-sqlite3";
 
 const dbDir = path.resolve(process.cwd(), "server", "data");
@@ -31,6 +32,76 @@ db.exec(`
     updated_at text not null default (datetime('now'))
   );
 `);
+
+const legacyVideosPath = path.resolve(process.cwd(), "src", "data", "videos.ts");
+
+const normalizeDriveLink = (link) => String(link || "").replace(/\/view(\?.*)?$/, "/preview");
+
+const readLegacyVideos = () => {
+  if (!fs.existsSync(legacyVideosPath)) {
+    return [];
+  }
+
+  const source = fs.readFileSync(legacyVideosPath, "utf8");
+  const match = source.match(/export const videos: Video\[\]\s*=\s*(\[[\s\S]*?\]);/);
+  if (!match) {
+    return [];
+  }
+
+  const parsed = vm.runInNewContext(match[1], Object.create(null), { timeout: 1000 });
+  return Array.isArray(parsed) ? parsed : [];
+};
+
+const seedVideosIfEmpty = () => {
+  const count = Number(db.prepare("select count(*) as count from videos").get()?.count || 0);
+  if (count > 0) {
+    return;
+  }
+
+  const legacyVideos = readLegacyVideos();
+  if (!legacyVideos.length) {
+    console.warn("[db] videos table is empty and no legacy source was found");
+    return;
+  }
+
+  const upsertVideo = db.prepare(`
+    insert into videos (id, title, google_drive_link, category, is_latest, is_vertical, description)
+    values (?, ?, ?, ?, ?, ?, ?)
+    on conflict(id) do update set
+      title = excluded.title,
+      google_drive_link = excluded.google_drive_link,
+      category = excluded.category,
+      is_latest = excluded.is_latest,
+      is_vertical = excluded.is_vertical,
+      description = excluded.description,
+      updated_at = datetime('now')
+  `);
+
+  const runSeed = db.transaction((items) => {
+    items.forEach((video) => {
+      if (!video?.id || !video?.title || !video?.googleDriveLink || !video?.category) {
+        return;
+      }
+
+      upsertVideo.run(
+        video.id,
+        video.title,
+        normalizeDriveLink(video.googleDriveLink),
+        video.category,
+        video.isLatest ? 1 : 0,
+        video.isVertical ? 1 : 0,
+        video.description || null,
+      );
+    });
+  });
+
+  runSeed(legacyVideos);
+
+  const seededCount = Number(db.prepare("select count(*) as count from videos").get()?.count || 0);
+  console.log(`[db] seeded videos from legacy source: ${seededCount}`);
+};
+
+seedVideosIfEmpty();
 
 const mapVideoRow = (row) => ({
   id: row.id,
